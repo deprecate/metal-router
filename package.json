@@ -1,0 +1,20 @@
+{
+	"name": "metal-router",
+	"version": "0.0.0",
+	"description": "Routing solution to link URLs to Metal.js components",
+	"license": "BSD",
+	"repository": "metal/metal-router",
+	"engines": {
+		"node": ">=0.12.0"
+	},
+	"scripts": {
+		"test": "gulp test"
+	},
+	"keywords": [
+		"metal"
+	],
+	"devDependencies": {
+		"gulp": "^3.8.11",
+		"gulp-metal": "^0.7.0"
+	}
+}
