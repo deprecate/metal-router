@@ -46,6 +46,16 @@ new Router({
 	}
 });
 
+// Attach events on router -----------------------------------------------------
+
+Router.router().on('startNavigate', function(event) {
+	console.log('-> Navigating to ' + event.path);
+});
+
+Router.router().on('endNavigate', function(event) {
+	console.log('-> Navigation done');
+});
+
 // Dispatch router to the current browser url ----------------------------------
 
 Router.router().dispatch();
