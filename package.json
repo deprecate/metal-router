@@ -15,6 +15,8 @@
 	],
 	"devDependencies": {
 		"gulp": "^3.8.11",
-		"gulp-metal": "^0.7.0"
+		"gulp-metal": "^0.7.0",
+		"karma-sinon": "^1.0.4",
+		"sinon": "^1.14.1"
 	}
 }
