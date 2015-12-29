@@ -18,4 +18,4 @@ Basic example of routing link URLs to Metal.js components.
   metal build
   ```
 
-5. Run some local web server and open `index.html` on the browser. Note that metal-router will not work on `file://`.
+5. Run some local web server on the root of the project and open `http://localhost:[PORT]/demos/basic/index.html` on the browser. Note that metal-router will not work on `file://`.
