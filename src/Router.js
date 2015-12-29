@@ -81,6 +81,15 @@ class Router extends RouterBase {
  */
 Router.ATTRS = {
 	/**
+	 * If set to true navigation will cache component state deferred results.
+	 * @type {boolean}
+	 */
+	cacheable: {
+		validator: core.isBoolean,
+		value: true
+	},
+
+	/**
 	 * Metal component to render when path is accessed.
 	 * @type {Component}
 	 */
@@ -154,6 +163,7 @@ class ComponentScreen extends RequestScreen {
 	 * @inheritDoc
 	 */
 	load(path) {
+		this.setCacheable(this.router.cacheable);
 		var deferred = CancellablePromise.resolve();
 		if (core.isNull(this.router.state)) {
 			deferred = deferred.then(() => super.load(path));

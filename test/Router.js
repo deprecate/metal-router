@@ -112,7 +112,7 @@ describe('Router', function() {
 	});
 
 	it('should load path url if state is null and stores as router lastState', function(done) {
-		sinon.stub(RequestScreen.prototype, 'load', function() {
+		var stub = sinon.stub(RequestScreen.prototype, 'load', function() {
 			return 'sentinel';
 		});
 		var router = new Router({
@@ -123,6 +123,35 @@ describe('Router', function() {
 		screen.load('/path').then(() => {
 			assert.strictEqual('sentinel', router.lastState);
 			assert.strictEqual(1, RequestScreen.prototype.load.callCount);
+			router.dispose();
+			stub.restore();
+			done();
+		});
+	});
+
+	it('should router set screen cacheability to true based on its cacheable state', function(done) {
+		var router = new Router({
+			path: '/path',
+			component: CustomComponent,
+			cacheable: true
+		});
+		var screen = new Router.defaultScreen(router);
+		screen.load('/path').then(() => {
+			assert.ok(screen.isCacheable());
+			router.dispose();
+			done();
+		});
+	});
+
+	it('should router set screen cacheability to false based on its cacheable state', function(done) {
+		var router = new Router({
+			path: '/path',
+			component: CustomComponent,
+			cacheable: false
+		});
+		var screen = new Router.defaultScreen(router);
+		screen.load('/path').then(() => {
+			assert.ok(!screen.isCacheable());
 			router.dispose();
 			done();
 		});
