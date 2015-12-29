@@ -2,6 +2,8 @@
 
 Routing solution to link URLs to Metal.js components
 
+![](https://raw.githubusercontent.com/metal/metal-router/master/demos/basic/img/sample.gif)
+
 ## Setup
 
 1. Install NodeJS >= [v0.12.0](http://nodejs.org/dist/v0.12.0/), if you don't have it yet.
