@@ -1,7 +1,7 @@
 {
 	"name": "metal-router",
 	"version": "0.0.0",
-	"description": "Routing solution to link URLs to Metal.js components",
+	"description": "Routing solution to link URLs to Metal.js components using HTML5 History API.",
 	"license": "BSD",
 	"repository": "metal/metal-router",
 	"engines": {
