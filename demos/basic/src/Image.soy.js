@@ -21,14 +21,14 @@ if (typeof Templates.Image == 'undefined') { Templates.Image = {}; }
  * @return {!soydata.SanitizedHtml}
  * @suppress {checkTypes}
  */
-Templates.Image.content = function(opt_data, opt_ignored, opt_ijData) {
+Templates.Image.render = function(opt_data, opt_ignored, opt_ijData) {
   return soydata.VERY_UNSAFE.ordainSanitizedHtml('<img id="' + soy.$$escapeHtmlAttribute(opt_data.id) + '" width="' + soy.$$escapeHtmlAttribute(opt_data.width) + '" height="' + soy.$$escapeHtmlAttribute(opt_data.height) + '" src="' + soy.$$escapeHtmlAttribute(soy.$$filterNormalizeUri(opt_data.src)) + '">');
 };
 if (goog.DEBUG) {
-  Templates.Image.content.soyTemplateName = 'Templates.Image.content';
+  Templates.Image.render.soyTemplateName = 'Templates.Image.render';
 }
 
-Templates.Image.content.params = ["height","id","src","width"];
+Templates.Image.render.params = ["height","id","src","width"];
 
 class Image extends Component {}
 Image.RENDERER = SoyRenderer;

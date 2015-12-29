@@ -21,11 +21,11 @@ if (typeof Templates.About == 'undefined') { Templates.About = {}; }
  * @return {!soydata.SanitizedHtml}
  * @suppress {checkTypes}
  */
-Templates.About.content = function(opt_data, opt_ignored, opt_ijData) {
+Templates.About.render = function(opt_data, opt_ignored, opt_ijData) {
   return soydata.VERY_UNSAFE.ordainSanitizedHtml('<a href="/demos/basic/">Home</a> | <a href="/demos/basic/home-page">Home Page</a> | <a href="/demos/basic/about">About</a> | <a href="/demos/basic/about-us">About Us</a> | <a href="/demos/basic/about-delayed">About Delayed</a>' + Templates.About.body(opt_data, null, opt_ijData) + Templates.About.footer(opt_data, null, opt_ijData));
 };
 if (goog.DEBUG) {
-  Templates.About.content.soyTemplateName = 'Templates.About.content';
+  Templates.About.render.soyTemplateName = 'Templates.About.render';
 }
 
 
@@ -37,7 +37,7 @@ if (goog.DEBUG) {
  * @suppress {checkTypes}
  */
 Templates.About.body = function(opt_data, opt_ignored, opt_ijData) {
-  return soydata.VERY_UNSAFE.ordainSanitizedHtml('<p id="' + soy.$$escapeHtmlAttribute(opt_data.id) + '-body">' + Templates.Image.content(soy.$$augmentMap(opt_data, {id: 'image', width: 600, height: 383, src: 'img/img0.jpg'}), null, opt_ijData) + '</p>');
+  return soydata.VERY_UNSAFE.ordainSanitizedHtml('<p id="' + soy.$$escapeHtmlAttribute(opt_data.id) + '-body">' + Templates.Image.render(soy.$$augmentMap(opt_data, {id: 'image', width: 600, height: 383, src: 'img/img0.jpg'}), null, opt_ijData) + '</p>');
 };
 if (goog.DEBUG) {
   Templates.About.body.soyTemplateName = 'Templates.About.body';
@@ -52,13 +52,13 @@ if (goog.DEBUG) {
  * @suppress {checkTypes}
  */
 Templates.About.footer = function(opt_data, opt_ignored, opt_ijData) {
-  return soydata.VERY_UNSAFE.ordainSanitizedHtml('<p id="' + soy.$$escapeHtmlAttribute(opt_data.id) + '-footer">You are at page ' + soy.$$escapeHtml(opt_data.title) + '! Sub-route <a href="/demos/basic/about-subroute">click here</a>.' + soy.$$escapeHtml(Templates.Router.content({path: '/demos/basic/about-subroute', state: {title: 'About Sub-route'}, component: 'About'}, null, opt_ijData)) + '</p>');
+  return soydata.VERY_UNSAFE.ordainSanitizedHtml('<p id="' + soy.$$escapeHtmlAttribute(opt_data.id) + '-footer">You are at page ' + soy.$$escapeHtml(opt_data.title) + '! Sub-route <a href="/demos/basic/about-subroute">click here</a>.' + soy.$$escapeHtml(Templates.Router.render({path: '/demos/basic/about-subroute', state: {title: 'About Sub-route'}, component: 'About'}, null, opt_ijData)) + '</p>');
 };
 if (goog.DEBUG) {
   Templates.About.footer.soyTemplateName = 'Templates.About.footer';
 }
 
-Templates.About.content.params = [];
+Templates.About.render.params = [];
 Templates.About.body.params = ["id"];
 Templates.About.footer.params = ["id","title"];
 

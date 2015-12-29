@@ -21,14 +21,14 @@ if (typeof Templates.Router == 'undefined') { Templates.Router = {}; }
  * @return {!soydata.SanitizedHtml}
  * @suppress {checkTypes}
  */
-Templates.Router.content = function(opt_data, opt_ignored, opt_ijData) {
+Templates.Router.render = function(opt_data, opt_ignored, opt_ijData) {
   return soydata.VERY_UNSAFE.ordainSanitizedHtml('<link id="' + soy.$$escapeHtmlAttribute(opt_data.id) + '" rel="metal-route"></link>');
 };
 if (goog.DEBUG) {
-  Templates.Router.content.soyTemplateName = 'Templates.Router.content';
+  Templates.Router.render.soyTemplateName = 'Templates.Router.render';
 }
 
-Templates.Router.content.params = ["id"];
+Templates.Router.render.params = ["id"];
 
 class Router extends Component {}
 Router.RENDERER = SoyRenderer;

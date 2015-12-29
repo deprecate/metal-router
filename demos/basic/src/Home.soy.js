@@ -21,11 +21,11 @@ if (typeof Templates.Home == 'undefined') { Templates.Home = {}; }
  * @return {!soydata.SanitizedHtml}
  * @suppress {checkTypes}
  */
-Templates.Home.content = function(opt_data, opt_ignored, opt_ijData) {
+Templates.Home.render = function(opt_data, opt_ignored, opt_ijData) {
   return soydata.VERY_UNSAFE.ordainSanitizedHtml('<a href="/demos/basic/">Home</a> | <a href="/demos/basic/home-page">Home Page</a> | <a href="/demos/basic/about">About</a> | <a href="/demos/basic/about-us">About Us</a> | <a href="/demos/basic/about-delayed">About Delayed</a>' + Templates.Home.body(opt_data, null, opt_ijData) + Templates.Home.footer(opt_data, null, opt_ijData));
 };
 if (goog.DEBUG) {
-  Templates.Home.content.soyTemplateName = 'Templates.Home.content';
+  Templates.Home.render.soyTemplateName = 'Templates.Home.render';
 }
 
 
@@ -37,7 +37,7 @@ if (goog.DEBUG) {
  * @suppress {checkTypes}
  */
 Templates.Home.body = function(opt_data, opt_ignored, opt_ijData) {
-  return soydata.VERY_UNSAFE.ordainSanitizedHtml('<p id="' + soy.$$escapeHtmlAttribute(opt_data.id) + '-body">' + Templates.Image.content(soy.$$augmentMap(opt_data, {id: 'image', width: 512, height: 256, src: 'img/img1.jpg'}), null, opt_ijData) + '</p>');
+  return soydata.VERY_UNSAFE.ordainSanitizedHtml('<p id="' + soy.$$escapeHtmlAttribute(opt_data.id) + '-body">' + Templates.Image.render(soy.$$augmentMap(opt_data, {id: 'image', width: 512, height: 256, src: 'img/img1.jpg'}), null, opt_ijData) + '</p>');
 };
 if (goog.DEBUG) {
   Templates.Home.body.soyTemplateName = 'Templates.Home.body';
@@ -58,7 +58,7 @@ if (goog.DEBUG) {
   Templates.Home.footer.soyTemplateName = 'Templates.Home.footer';
 }
 
-Templates.Home.content.params = [];
+Templates.Home.render.params = [];
 Templates.Home.body.params = ["id"];
 Templates.Home.footer.params = ["id","title"];
 
