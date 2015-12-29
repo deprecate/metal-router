@@ -52,7 +52,7 @@ Router.router().on('startNavigate', function(event) {
 	console.log('-> Navigating to ' + event.path);
 });
 
-Router.router().on('endNavigate', function(event) {
+Router.router().on('endNavigate', function() {
 	console.log('-> Navigation done');
 });
 
