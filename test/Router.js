@@ -24,7 +24,7 @@ describe('Router', function() {
 		router.dispose();
 	});
 
-	it('should remove route to router from disposed router', function() {
+	it('should remove route from router from disposed router', function() {
 		var router = new Router({
 			path: '/path',
 			component: CustomComponent
