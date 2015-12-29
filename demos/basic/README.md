@@ -1,6 +1,6 @@
 # Basic
 
-Routing solution to link URLs to Metal.js components
+Basic example of routing link URLs to Metal.js components.
 
 ## Setup
 
