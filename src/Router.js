@@ -103,7 +103,6 @@ Router.ATTRS = {
 	 * @protected
 	 */
 	path: {
-		validator: core.isString
 	},
 
 	/**
