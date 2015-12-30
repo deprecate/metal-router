@@ -129,6 +129,26 @@ describe('Router', function() {
 		});
 	});
 
+	it('should load path url if state is null and stores as router lastState as Json', function(done) {
+		var stub = sinon.stub(RequestScreen.prototype, 'load', function() {
+			return '{"sentinel":true}';
+		});
+		var router = new Router({
+			path: '/path',
+			component: CustomComponent
+		});
+		var screen = new Router.defaultScreen(router);
+		screen.load('/path').then(() => {
+			assert.deepEqual({
+				sentinel: true
+			}, screen.maybeParseLastStateAsJson());
+			assert.strictEqual(1, RequestScreen.prototype.load.callCount);
+			router.dispose();
+			stub.restore();
+			done();
+		});
+	});
+
 	it('should router set screen cacheability to true based on its cacheable state', function(done) {
 		var router = new Router({
 			path: '/path',

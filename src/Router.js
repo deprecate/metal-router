@@ -147,7 +147,7 @@ class ComponentScreen extends RequestScreen {
 	 * @inheritDoc
 	 */
 	flip() {
-		var state = this.router.lastState || {};
+		var state = this.maybeParseLastStateAsJson();
 
 		if (Router.isRoutingToSameActiveComponent(this.router)) {
 			Router.activeComponent.setAttrs(state);
@@ -171,6 +171,20 @@ class ComponentScreen extends RequestScreen {
 			deferred = deferred.then(() => this.router.state(path));
 		}
 		return deferred.then((loadedState) => this.router.lastState = loadedState);
+	}
+
+	/**
+	 * Maybe parses last state as Json, if not able to parse an object is
+	 * returned.
+	 * @return {object}
+	 */
+	maybeParseLastStateAsJson() {
+		var state = this.router.lastState;
+		try {
+			return JSON.parse(state);
+		} catch (err) {
+			return state;
+		}
 	}
 
 }
