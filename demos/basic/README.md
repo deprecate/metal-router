@@ -12,10 +12,10 @@ Basic example of routing link URLs to Metal.js components.
   [sudo] npm install -g metal-cli
   ```
 
-4. Build the code:
+3. Build the code:
 
   ```
   metal build
   ```
 
-5. Run some local web server on the root of the project and open `http://localhost:[PORT]/demos/basic/index.html` on the browser. Note that metal-router will not work on `file://`.
+4. Run some local web server on the root of the project and open `http://localhost:[PORT]/demos/basic/index.html` on the browser. Note that metal-router will not work on `file://`.
