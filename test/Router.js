@@ -8,6 +8,10 @@ import Router from '../src/Router';
 
 describe('Router', function() {
 
+	beforeEach(function() {
+		Router.activeComponent = null;
+	});
+
 	it('should create singleton instance of router', function() {
 		var router = Router.router();
 		assert.ok(router);
@@ -198,9 +202,21 @@ describe('Router', function() {
 			component: CustomComponent
 		});
 		var screen = new Router.defaultScreen(router);
-		Router.activeComponent = null;
 		screen.flip();
 		assert.strictEqual(1, CustomComponent.prototype.render.callCount);
+		router.dispose();
+	});
+
+	it('should decorate component when routing to path with progressive enhancement', function() {
+		CustomComponent.prototype.decorate = sinon.stub();
+		var router = new Router({
+			path: '/path',
+			component: CustomComponent,
+			progressiveEnhancement: true
+		});
+		var screen = new Router.defaultScreen(router);
+		screen.flip();
+		assert.strictEqual(1, CustomComponent.prototype.decorate.callCount);
 		router.dispose();
 	});
 

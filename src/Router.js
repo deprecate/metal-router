@@ -83,10 +83,21 @@ Router.ATTRS = {
 	/**
 	 * If set to true navigation will cache component state deferred results.
 	 * @type {boolean}
+	 * @default true
 	 */
 	cacheable: {
 		validator: core.isBoolean,
 		value: true
+	},
+
+	/**
+	 * If set to true component will be decorated instead of rendered.
+	 * @type {boolean}
+	 * @default false
+	 */
+	progressiveEnhancement: {
+		validator: core.isBoolean,
+		value: false
 	},
 
 	/**
@@ -154,7 +165,12 @@ class ComponentScreen extends RequestScreen {
 			if (Router.activeComponent) {
 				Router.activeComponent.dispose();
 			}
-			Router.activeComponent = this.router.createComponent(state).render();
+			Router.activeComponent = this.router.createComponent(state);
+			if (this.router.progressiveEnhancement) {
+				Router.activeComponent.decorate();
+			} else {
+				Router.activeComponent.render();
+			}
 		}
 	}
 
@@ -182,7 +198,7 @@ class ComponentScreen extends RequestScreen {
 		try {
 			return JSON.parse(state);
 		} catch (err) {
-			return state;
+			return core.isDefAndNotNull(state) ? state : {};
 		}
 	}
 
