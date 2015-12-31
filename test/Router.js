@@ -251,6 +251,22 @@ describe('Router', function() {
 		router.dispose();
 	});
 
+	it('should not reuse active component when routing to same component path if reuseActiveComponent is false', function() {
+		CustomComponent.prototype.setAttrs = sinon.stub();
+		CustomComponent.prototype.render = sinon.stub();
+		var router = new Router({
+			path: '/path',
+			component: CustomComponent,
+			reuseActiveComponent: false
+		});
+		var screen = new Router.defaultScreen(router);
+		Router.activeComponent = router.createComponent();
+		screen.flip();
+		assert.strictEqual(0, CustomComponent.prototype.setAttrs.callCount);
+		assert.strictEqual(1, CustomComponent.prototype.render.callCount);
+		router.dispose();
+	});
+
 });
 
 class CustomComponent extends Component {

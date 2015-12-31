@@ -91,16 +91,6 @@ Router.ATTRS = {
 	},
 
 	/**
-	 * If set to true component will be decorated instead of rendered.
-	 * @type {boolean}
-	 * @default false
-	 */
-	progressiveEnhancement: {
-		validator: core.isBoolean,
-		value: false
-	},
-
-	/**
 	 * Metal component to render when path is accessed.
 	 * @type {Component}
 	 */
@@ -114,6 +104,27 @@ Router.ATTRS = {
 	 * @protected
 	 */
 	path: {
+	},
+
+	/**
+	 * If set to true component will be decorated instead of rendered.
+	 * @type {boolean}
+	 * @default false
+	 */
+	progressiveEnhancement: {
+		validator: core.isBoolean,
+		value: false
+	},
+
+	/**
+	 * If set to true active component will be used when routing to same
+	 * component type.
+	 * @type {boolean}
+	 * @default true
+	 */
+	reuseActiveComponent: {
+		validator: core.isBoolean,
+		value: true
 	},
 
 	/**
@@ -159,7 +170,7 @@ class ComponentScreen extends RequestScreen {
 	flip() {
 		var state = this.maybeParseLastStateAsJson();
 
-		if (Router.isRoutingToSameActiveComponent(this.router)) {
+		if (this.router.reuseActiveComponent && Router.isRoutingToSameActiveComponent(this.router)) {
 			Router.activeComponent.setAttrs(state);
 		} else {
 			if (Router.activeComponent) {
