@@ -145,6 +145,12 @@ Router.ATTRS = {
  */
 Router.activeComponent = null;
 
+/**
+ * Holds the active render state.
+ * @type {*}
+ * @static
+ */
+Router.activeState = null;
 
 class ComponentScreen extends RequestScreen {
 
@@ -169,21 +175,21 @@ class ComponentScreen extends RequestScreen {
 	 * @inheritDoc
 	 */
 	flip() {
-		var state = this.maybeParseLastStateAsJson();
-
 		var router = this.router;
 		var redirectRouter = this.maybeFindRedirectRouter();
 		if (redirectRouter) {
 			router = redirectRouter;
 		}
 
+		Router.activeState = this.maybeParseLastLoadedStateAsJson();
+
 		if (this.router.reuseActiveComponent && Router.isRoutingToSameActiveComponent(router)) {
-			Router.activeComponent.setAttrs(state);
+			Router.activeComponent.setAttrs(Router.activeState);
 		} else {
 			if (Router.activeComponent) {
 				Router.activeComponent.dispose();
 			}
-			Router.activeComponent = router.createComponent(state);
+			Router.activeComponent = router.createComponent(Router.activeState);
 			if (router.progressiveEnhancement) {
 				Router.activeComponent.decorate();
 			} else {
@@ -205,7 +211,7 @@ class ComponentScreen extends RequestScreen {
 		}
 		return deferred.then((loadedState) => {
 			this.router.lastPath = path;
-			this.router.lastState = loadedState;
+			this.router.lastLoadedState = loadedState;
 			return loadedState;
 		});
 	}
@@ -233,8 +239,8 @@ class ComponentScreen extends RequestScreen {
 	 * returned.
 	 * @return {object}
 	 */
-	maybeParseLastStateAsJson() {
-		var state = this.router.lastState;
+	maybeParseLastLoadedStateAsJson() {
+		var state = this.router.lastLoadedState;
 		try {
 			return JSON.parse(state);
 		} catch (err) {

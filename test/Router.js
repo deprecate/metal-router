@@ -115,7 +115,7 @@ describe('Router', function() {
 		});
 	});
 
-	it('should load path url if state is null and stores as router lastState', function(done) {
+	it('should load path url if state is null and stores as router lastLoadedState', function(done) {
 		var stub = sinon.stub(RequestScreen.prototype, 'load', function() {
 			return 'sentinel';
 		});
@@ -125,7 +125,7 @@ describe('Router', function() {
 		});
 		var screen = new Router.defaultScreen(router);
 		screen.load('/path').then(() => {
-			assert.strictEqual('sentinel', router.lastState);
+			assert.strictEqual('sentinel', router.lastLoadedState);
 			assert.strictEqual(1, RequestScreen.prototype.load.callCount);
 			router.dispose();
 			stub.restore();
@@ -133,7 +133,7 @@ describe('Router', function() {
 		});
 	});
 
-	it('should load path url if state is null and stores as router lastState as Json', function(done) {
+	it('should load path url if state is null and stores as router lastLoadedState as Json', function(done) {
 		var stub = sinon.stub(RequestScreen.prototype, 'load', function() {
 			return '{"sentinel":true}';
 		});
@@ -145,7 +145,7 @@ describe('Router', function() {
 		screen.load('/path').then(() => {
 			assert.deepEqual({
 				sentinel: true
-			}, screen.maybeParseLastStateAsJson());
+			}, screen.maybeParseLastLoadedStateAsJson());
 			assert.strictEqual(1, RequestScreen.prototype.load.callCount);
 			router.dispose();
 			stub.restore();
@@ -187,7 +187,7 @@ describe('Router', function() {
 		});
 	});
 
-	it('should load router state and stores as router lastState', function(done) {
+	it('should load router state and store as router lastLoadedState', function(done) {
 		var router = new Router({
 			path: '/path',
 			component: CustomComponent,
@@ -195,7 +195,23 @@ describe('Router', function() {
 		});
 		var screen = new Router.defaultScreen(router);
 		screen.load('/path').then(() => {
-			assert.strictEqual('sentinel', router.lastState);
+			assert.strictEqual('sentinel', router.lastLoadedState);
+			router.dispose();
+			done();
+		});
+	});
+
+	it('should load router state and store as json statically as Router active state', function(done) {
+		var state = {};
+		var router = new Router({
+			path: '/path',
+			component: CustomComponent,
+			state: state
+		});
+		var screen = new Router.defaultScreen(router);
+		screen.load('/path').then(() => {
+			screen.flip();
+			assert.strictEqual(state, Router.activeState);
 			router.dispose();
 			done();
 		});
