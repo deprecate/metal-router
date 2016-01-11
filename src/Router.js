@@ -39,6 +39,7 @@ class Router extends RouterBase {
 	constructor(opt_config) {
 		super(opt_config);
 		this.route = new Route(this.path, () => new Router.defaultScreen(this));
+		this.route.router = this;
 		Router.router().addRoutes(this.route);
 	}
 
@@ -170,14 +171,20 @@ class ComponentScreen extends RequestScreen {
 	flip() {
 		var state = this.maybeParseLastStateAsJson();
 
-		if (this.router.reuseActiveComponent && Router.isRoutingToSameActiveComponent(this.router)) {
+		var router = this.router;
+		var redirectRouter = this.maybeFindRedirectRouter();
+		if (redirectRouter) {
+			router = redirectRouter;
+		}
+
+		if (this.router.reuseActiveComponent && Router.isRoutingToSameActiveComponent(router)) {
 			Router.activeComponent.setAttrs(state);
 		} else {
 			if (Router.activeComponent) {
 				Router.activeComponent.dispose();
 			}
-			Router.activeComponent = this.router.createComponent(state);
-			if (this.router.progressiveEnhancement) {
+			Router.activeComponent = router.createComponent(state);
+			if (router.progressiveEnhancement) {
 				Router.activeComponent.decorate();
 			} else {
 				Router.activeComponent.render();
@@ -196,7 +203,29 @@ class ComponentScreen extends RequestScreen {
 		} else {
 			deferred = deferred.then(() => this.router.state(path));
 		}
-		return deferred.then((loadedState) => this.router.lastState = loadedState);
+		return deferred.then((loadedState) => {
+			this.router.lastPath = path;
+			this.router.lastState = loadedState;
+			return loadedState;
+		});
+	}
+
+	/**
+	 * Some responses made by superclass performs a 302 redirect which will be
+	 * reflected into the browser history path. When redirected, make sure to
+	 * render the best component match to new path. If not found any, it will
+	 * use current router component.
+	 * @return {Router}
+	 */
+	maybeFindRedirectRouter() {
+		var redirectPath = this.beforeUpdateHistoryPath(this.router.lastPath);
+		if (redirectPath !== this.router.lastPath) {
+			var redirectRoute = Router.router().findRoute(redirectPath);
+			if (redirectRoute) {
+				return redirectRoute.router;
+			}
+		}
+		return null;
 	}
 
 	/**

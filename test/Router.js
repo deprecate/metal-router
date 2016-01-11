@@ -160,6 +160,9 @@ describe('Router', function() {
 			cacheable: true
 		});
 		var screen = new Router.defaultScreen(router);
+		screen.isValidResponseStatusCode = function() {
+			return true;
+		};
 		screen.load('/path').then(() => {
 			assert.ok(screen.isCacheable());
 			router.dispose();
@@ -174,6 +177,9 @@ describe('Router', function() {
 			cacheable: false
 		});
 		var screen = new Router.defaultScreen(router);
+		screen.isValidResponseStatusCode = function() {
+			return true;
+		};
 		screen.load('/path').then(() => {
 			assert.ok(!screen.isCacheable());
 			router.dispose();
@@ -202,9 +208,61 @@ describe('Router', function() {
 			component: CustomComponent
 		});
 		var screen = new Router.defaultScreen(router);
+		screen.isValidResponseStatusCode = function() {
+			return true;
+		};
 		screen.flip();
 		assert.strictEqual(1, CustomComponent.prototype.render.callCount);
 		router.dispose();
+	});
+
+	it('should render redirect component when routing to path that got redirected', function(done) {
+		CustomComponent.prototype.render = sinon.stub();
+		RedirectComponent.prototype.render = sinon.stub();
+		var router = new Router({
+			path: '/path',
+			component: CustomComponent
+		});
+		var redirectRouter = new Router({
+			path: '/redirect',
+			component: RedirectComponent
+		});
+		var screen = new Router.defaultScreen(router);
+		screen.isValidResponseStatusCode = function() {
+			return true;
+		};
+		screen.beforeUpdateHistoryPath = function() {
+			return '/redirect';
+		};
+		screen.load('/path').then(() => {
+			screen.flip();
+			assert.strictEqual(0, CustomComponent.prototype.render.callCount);
+			assert.strictEqual(1, RedirectComponent.prototype.render.callCount);
+			router.dispose();
+			redirectRouter.dispose();
+			done();
+		});
+	});
+
+	it('should render original component when routing to path that got redirected without match route', function(done) {
+		CustomComponent.prototype.render = sinon.stub();
+		var router = new Router({
+			path: '/path',
+			component: CustomComponent
+		});
+		var screen = new Router.defaultScreen(router);
+		screen.isValidResponseStatusCode = function() {
+			return true;
+		};
+		screen.beforeUpdateHistoryPath = function() {
+			return '/redirect';
+		};
+		screen.load('/path').then(() => {
+			screen.flip();
+			assert.strictEqual(1, CustomComponent.prototype.render.callCount);
+			router.dispose();
+			done();
+		});
 	});
 
 	it('should decorate component when routing to path with progressive enhancement', function() {
@@ -273,3 +331,8 @@ class CustomComponent extends Component {
 }
 CustomComponent.RENDERER = SoyRenderer;
 SoyAop.registerTemplates('CustomComponent');
+
+class RedirectComponent extends Component {
+}
+RedirectComponent.RENDERER = SoyRenderer;
+SoyAop.registerTemplates('RedirectComponent');
