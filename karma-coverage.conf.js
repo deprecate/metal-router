@@ -10,9 +10,9 @@ module.exports = function (config) {
 		frameworks: ['mocha', 'chai', 'sinon', 'source-map-support', 'commonjs'],
 
 		files: [
-			'bower_components/soyutils/soyutils.js',
-			'bower_components/metal*/src/**/*.js',
-			'bower_components/senna.js/src/**/*.js',
+			'node_modules/closure-templates/soyutils.js',
+			'node_modules/metal*/src/**/*.js',
+			'node_modules/senna/src/**/*.js',
 			'src/**/*.js',
 			'test/**/*.js'
 		],
@@ -20,8 +20,8 @@ module.exports = function (config) {
 		preprocessors: {
 			'src/**/!(*.soy).js': ['coverage', 'commonjs'],
 			'src/**/*.soy.js': ['babel', 'commonjs'],
-			'bower_components/metal*/**/*.js': ['babel', 'commonjs'],
-			'bower_components/senna.js/**/*.js': ['babel', 'commonjs'],
+			'node_modules/metal*/**/*.js': ['babel', 'commonjs'],
+			'node_modules/senna/**/*.js': ['babel', 'commonjs'],
 			'test/**/*.js': ['babel', 'commonjs']
 		},
 

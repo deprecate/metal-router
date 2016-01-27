@@ -18,7 +18,6 @@ Routing solution to link URLs to Metal.js components using HTML5 History API.
 
   ```
   npm install
-  bower install
   ```
 
 4. Build the code:
@@ -26,5 +25,3 @@ Routing solution to link URLs to Metal.js components using HTML5 History API.
   ```
   gulp build
   ```
-
-

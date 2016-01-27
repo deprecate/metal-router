@@ -4,18 +4,29 @@
 	"description": "Routing solution to link URLs to Metal.js components using HTML5 History API.",
 	"license": "BSD",
 	"repository": "metal/metal-router",
-	"engines": {
-		"node": ">=0.12.0"
-	},
+  "engines": {
+    "node": ">=0.12.0",
+    "npm": ">=3.0.0"
+  },
+  "files": [
+    "src/**/*.js",
+    "test/**/*.js"
+  ],
 	"scripts": {
 		"test": "gulp test"
 	},
 	"keywords": [
 		"metal"
 	],
+  "dependencies": {
+		"bootstrap": "^3.3.6",
+		"closure-templates": "20140422.0.0",
+		"metal": "metal/metal.js#master",
+		"senna": "liferay/senna.js#master"
+  },
 	"devDependencies": {
 		"gulp": "^3.8.11",
-		"gulp-metal": "^0.7.0",
+		"gulp-metal": "^0.9.0",
 		"karma-sinon": "^1.0.4",
 		"sinon": "^1.14.1"
 	}

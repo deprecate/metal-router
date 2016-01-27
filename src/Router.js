@@ -1,11 +1,11 @@
 'use strict';
 
-import core from 'bower:metal/src/core';
-import CancellablePromise from 'bower:metal-promise/src/promise/Promise';
-import ComponentRegistry from 'bower:metal/src/component/ComponentRegistry';
-import App from 'bower:senna.js/src/app/App';
-import Route from 'bower:senna.js/src/route/Route';
-import RequestScreen from 'bower:senna.js/src/screen/RequestScreen';
+import core from 'metal/src/core';
+import CancellablePromise from 'metal-promise/src/promise/Promise';
+import ComponentRegistry from 'metal/src/component/ComponentRegistry';
+import App from 'senna/src/app/App';
+import Route from 'senna/src/route/Route';
+import RequestScreen from 'senna/src/screen/RequestScreen';
 import RouterBase from './Router.soy';
 
 class Router extends RouterBase {

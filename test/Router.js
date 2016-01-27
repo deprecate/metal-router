@@ -1,9 +1,9 @@
 'use strict';
 
-import Component from 'bower:metal/src/component/Component';
-import SoyRenderer from 'bower:metal/src/soy/SoyRenderer';
-import SoyAop from 'bower:metal/src/soy/SoyAop';
-import RequestScreen from 'bower:senna.js/src/screen/RequestScreen';
+import Component from 'metal/src/component/Component';
+import SoyRenderer from 'metal/src/soy/SoyRenderer';
+import SoyAop from 'metal/src/soy/SoyAop';
+import RequestScreen from 'senna/src/screen/RequestScreen';
 import Router from '../src/Router';
 
 describe('Router', function() {
