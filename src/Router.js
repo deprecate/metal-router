@@ -1,9 +1,9 @@
 'use strict';
 
-import core from 'metal/src/core';
-import CancellablePromise from 'metal-promise/src/promise/Promise';
-import ComponentRegistry from 'metal/src/component/ComponentRegistry';
-import App from 'senna/src/app/App';
+import core from 'metal';
+import CancellablePromise from 'metal-promise';
+import { ComponentRegistry } from 'metal-component';
+import App from 'senna';
 import Route from 'senna/src/route/Route';
 import RequestScreen from 'senna/src/screen/RequestScreen';
 import RouterBase from './Router.soy';

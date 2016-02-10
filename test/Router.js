@@ -1,8 +1,7 @@
 'use strict';
 
-import Component from 'metal/src/component/Component';
-import SoyRenderer from 'metal/src/soy/SoyRenderer';
-import SoyAop from 'metal/src/soy/SoyAop';
+import Component from 'metal-component';
+import { SoyAop, SoyRenderer } from 'metal-soy';
 import RequestScreen from 'senna/src/screen/RequestScreen';
 import Router from '../src/Router';
 
