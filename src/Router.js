@@ -174,6 +174,16 @@ class ComponentScreen extends RequestScreen {
 	/**
 	 * @inheritDoc
 	 */
+	evaluateScripts() {}
+
+	/**
+	 * @inheritDoc
+	 */
+	evaluateStyles() {}
+
+	/**
+	 * @inheritDoc
+	 */
 	flip() {
 		var router = this.router;
 		var redirectRouter = this.maybeFindRedirectRouter();
