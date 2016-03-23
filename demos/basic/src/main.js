@@ -1,15 +1,16 @@
-import './Image.soy';
+'use strict';
 
-import Home from './Home.soy';
-import About from './About.soy';
+import { About } from './About.soy';
+import { Home } from './Home.soy';
 import Router from '../../../src/Router';
+import './Image.soy';
 
 // Routing from JavaScript -----------------------------------------------------
 
 new Router({
-	path: '/demos/basic/',
+	path: '/demos/basic',
 	component: Home,
-	state: {
+	initialState: {
 		title: 'Home'
 	}
 });
@@ -17,7 +18,7 @@ new Router({
 new Router({
 	path: '/demos/basic/home-page',
 	component: Home,
-	state: {
+	initialState: {
 		title: 'Home Page'
 	}
 });
@@ -25,7 +26,7 @@ new Router({
 new Router({
 	path: '/demos/basic/about',
 	component: About,
-	state: {
+	initialState: {
 		title: 'About'
 	}
 });
@@ -33,7 +34,7 @@ new Router({
 new Router({
 	path: '/demos/basic/about-us',
 	component: About,
-	state: {
+	initialState: {
 		title: 'About Us'
 	}
 });
@@ -41,7 +42,7 @@ new Router({
 new Router({
 	path: '/demos/basic/about-delayed',
 	component: About,
-	state: function() {
+	initialState: function() {
 		return new Promise((resolve) => setTimeout(() => resolve({ title: 'About Delayed' }), 2000));
 	}
 });

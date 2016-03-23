@@ -1,3 +1,5 @@
+'use strict';
+
 var babelOptions = {
 	presets: ['metal'],
 	sourceMap: 'both'
@@ -8,7 +10,8 @@ module.exports = function (config) {
 		frameworks: ['mocha', 'chai', 'sinon', 'source-map-support', 'commonjs'],
 
 		files: [
-			'node_modules/closure-templates/soyutils.js',
+			'node_modules/metal-soy-bundle/build/bundle.js',
+			'node_modules/html2incdom/src/*.js',
 			'node_modules/metal*/src/**/*.js',
 			'node_modules/senna/src/**/*.js',
 			'src/**/*.js',
@@ -17,7 +20,9 @@ module.exports = function (config) {
 
 		preprocessors: {
 			'src/**/*.js': ['babel', 'commonjs'],
-			'node_modules/metal*/**/*.js': ['babel', 'commonjs'],
+			'node_modules/html2incdom/src/*.js': ['babel', 'commonjs'],
+			'node_modules/metal-soy-bundle/build/bundle.js': ['commonjs'],
+			'node_modules/metal*/src/**/*.js': ['babel', 'commonjs'],
 			'node_modules/senna/**/*.js': ['babel', 'commonjs'],
 			'test/**/*.js': ['babel', 'commonjs']
 		},
@@ -26,4 +31,4 @@ module.exports = function (config) {
 
 		babelPreprocessor: {options: babelOptions}
 	});
-}
+};

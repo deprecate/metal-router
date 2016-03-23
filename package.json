@@ -1,37 +1,38 @@
 {
-	"name": "metal-router",
-	"version": "0.0.0",
-	"description": "Routing solution to link URLs to Metal.js components using HTML5 History API.",
-	"license": "BSD",
-	"repository": "metal/metal-router",
+  "name": "metal-router",
+  "version": "0.0.0",
+  "description": "Routing solution to link URLs to Metal.js components using HTML5 History API.",
+  "license": "BSD",
+  "repository": "metal/metal-router",
   "engines": {
     "node": ">=0.12.0",
     "npm": ">=3.0.0"
   },
-	"main": "src/Router.js",
+  "main": "src/Router.js",
   "files": [
     "src/**/*.js",
     "test/**/*.js"
   ],
-	"scripts": {
-		"test": "gulp test"
-	},
-	"keywords": [
-		"metal"
-	],
-  "dependencies": {
-		"bootstrap": "^3.3.6",
-		"closure-templates": "20140422.0.0",
-		"metal": "metal/metal.js#master",
-		"metal-component": "metal/metal-component#master",
-		"metal-promise": "metal/metal-promise#master",
-		"metal-soy": "metal/metal-soy#master",
-		"senna": "liferay/senna.js#master"
+  "scripts": {
+    "build:demo": "metal build -s demos/basic/src/**/*.js -d demos/basic/build --soySrc demos/**/*.soy --soyDest demos --soyDeps src/Router.soy",
+    "test": "gulp test"
   },
-	"devDependencies": {
-		"gulp": "^3.8.11",
-		"gulp-metal": "^0.10.0",
-		"karma-sinon": "^1.0.4",
-		"sinon": "^1.14.1"
-	}
+  "keywords": [
+    "metal"
+  ],
+  "dependencies": {
+    "bootstrap": "^3.3.6",
+    "metal": "metal/metal.js#master",
+    "metal-component": "metal/metal-component#master",
+    "metal-promise": "metal/metal-promise#master",
+    "metal-soy": "metal/metal-soy#master",
+    "senna": "liferay/senna.js#master"
+  },
+  "devDependencies": {
+    "gulp": "^3.8.11",
+    "gulp-metal": "^1.0.0",
+    "karma-sinon": "^1.0.4",
+    "metal-cli": "^1.0.1",
+    "sinon": "^1.14.1"
+  }
 }

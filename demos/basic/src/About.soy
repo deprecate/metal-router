@@ -1,38 +1,26 @@
-{namespace Templates.About}
+{namespace About}
 
 /**
- */
-{template .render}
-	<a href="/demos/basic/">Home</a> | <a href="/demos/basic/home-page">Home Page</a> | <a href="/demos/basic/about">About</a> | <a href="/demos/basic/about-us">About Us</a> | <a href="/demos/basic/about-delayed">About Delayed</a>
-	{call .body data="all" /}
-	{call .footer data="all" /}
-{/template}
-
-/**
- * @param id
- */
-{template .body}
-	<p id="{$id}-body">
-		{call Templates.Image.render data="all"}
-			{param id: 'image' /}
-			{param width: 600 /}
-			{param height: 383 /}
-			{param src: 'img/img0.jpg' /}
-		{/call}
-	</p>
-{/template}
-
-/**
- * @param id
  * @param title
  */
-{template .footer}
-	<p id="{$id}-footer">
-		You are at page {$title}! Sub-route <a href="/demos/basic/about-subroute">click here</a>.
-		{call Templates.Router.render}
-			{param path: '/demos/basic/about-subroute' /}
-			{param state: ['title': 'About Sub-route'] /}
-			{param component: 'About' /}
-		{/call}
-	</p>
+{template .render}
+	<div>
+		<a href="/demos/basic/">Home</a> | <a href="/demos/basic/home-page">Home Page</a> | <a href="/demos/basic/about">About</a> | <a href="/demos/basic/about-us">About Us</a> | <a href="/demos/basic/about-delayed">About Delayed</a>
+		<p>
+			{call Image.render data="all"}
+				{param id: 'image' /}
+				{param width: 600 /}
+				{param height: 383 /}
+				{param src: 'img/img0.jpg' /}
+			{/call}
+		</p>
+		<p>
+			You are at page {$title}! Sub-route <a href="/demos/basic/about-subroute">click here</a>.
+			{call Router.render}
+				{param path: '/demos/basic/about-subroute' /}
+				{param initialState: ['title': 'About Sub-route'] /}
+				{param component: 'About' /}
+			{/call}
+		</p>
+	</div>
 {/template}

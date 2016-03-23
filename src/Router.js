@@ -2,13 +2,15 @@
 
 import core from 'metal';
 import CancellablePromise from 'metal-promise';
-import { ComponentRegistry } from 'metal-component';
+import { Component, ComponentRegistry } from 'metal-component';
 import App from 'senna';
 import Route from 'senna/src/route/Route';
 import RequestScreen from 'senna/src/screen/RequestScreen';
-import RouterBase from './Router.soy';
+import Soy from 'metal-soy';
 
-class Router extends RouterBase {
+import templates from './Router.soy';
+
+class Router extends Component {
 
 	/**
 	 * Singleton to initializes and retrieve Senna.js application.
@@ -73,14 +75,15 @@ class Router extends RouterBase {
 	}
 
 }
+Soy.register(Router, templates);
 
 
 /**
- * Router attributes definition.
+ * Router state definition.
  * @type {!Object}
  * @static
  */
-Router.ATTRS = {
+Router.STATE = {
 	/**
 	 * If set to true navigation will cache component state deferred results.
 	 * @type {boolean}
@@ -96,6 +99,15 @@ Router.ATTRS = {
 	 * @type {Component}
 	 */
 	component: {
+	},
+
+	/**
+	 * Holds the load initial state value, function or deferred function that
+	 * resolves the component configurations.
+	 * @type {?Object|function(?string=)=}
+	 */
+	initialState: {
+		setter: (val) => val ? (core.isFunction(val) ? val : () => val) : null
 	},
 
 	/**
@@ -126,15 +138,6 @@ Router.ATTRS = {
 	reuseActiveComponent: {
 		validator: core.isBoolean,
 		value: true
-	},
-
-	/**
-	 * Holds the load state value, function or deferred function that
-	 * resolves the component configurations.
-	 * @type {?Object|function(?string=)=}
-	 */
-	state: {
-		setter: (val) => val ? (core.isFunction(val) ? val : () => val) : null
 	}
 };
 
@@ -194,7 +197,7 @@ class ComponentScreen extends RequestScreen {
 		Router.activeState = this.maybeParseLastLoadedStateAsJson();
 
 		if (this.router.reuseActiveComponent && Router.isRoutingToSameActiveComponent(router)) {
-			Router.activeComponent.setAttrs(Router.activeState);
+			Router.activeComponent.setState(Router.activeState);
 		} else {
 			if (Router.activeComponent) {
 				Router.activeComponent.dispose();
@@ -214,10 +217,10 @@ class ComponentScreen extends RequestScreen {
 	load(path) {
 		this.setCacheable(this.router.cacheable);
 		var deferred = CancellablePromise.resolve();
-		if (core.isNull(this.router.state)) {
+		if (core.isNull(this.router.initialState)) {
 			deferred = deferred.then(() => super.load(path));
 		} else {
-			deferred = deferred.then(() => this.router.state(path));
+			deferred = deferred.then(() => this.router.initialState(path));
 		}
 		return deferred.then((loadedState) => {
 			this.router.lastPath = path;

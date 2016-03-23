@@ -1,9 +1,9 @@
 'use strict';
 
-import Component from 'metal-component';
-import { SoyAop, SoyRenderer } from 'metal-soy';
+import { Component, ComponentRegistry } from 'metal-component';
 import RequestScreen from 'senna/src/screen/RequestScreen';
 import Router from '../src/Router';
+import Soy from 'metal-soy';
 
 describe('Router', function() {
 
@@ -75,25 +75,25 @@ describe('Router', function() {
 		router.dispose();
 	});
 
-	it('should router accept state as function', function() {
-		var state = sinon.stub();
+	it('should router accept initial state as function', function() {
+		var initialState = sinon.stub();
 		var router = new Router({
+			initialState: initialState,
 			path: '/path',
-			component: CustomComponent,
-			state: state
+			component: CustomComponent
 		});
-		assert.strictEqual(state, router.state);
+		assert.strictEqual(initialState, router.initialState);
 		router.dispose();
 	});
 
-	it('should router wrap state object or deferred in a function', function() {
-		var state = new Promise(function() {});
+	it('should router wrap initial state object or deferred in a function', function() {
+		var initialState = new Promise(function() {});
 		var router = new Router({
+			initialState: initialState,
 			path: '/path',
-			component: CustomComponent,
-			state: state
+			component: CustomComponent
 		});
-		assert.strictEqual(state, router.state());
+		assert.strictEqual(initialState, router.initialState());
 		router.dispose();
 	});
 
@@ -114,7 +114,7 @@ describe('Router', function() {
 		});
 	});
 
-	it('should load path url if state is null and stores as router lastLoadedState', function(done) {
+	it('should load path url if initial state is null and stores as router lastLoadedState', function(done) {
 		var stub = sinon.stub(RequestScreen.prototype, 'load', function() {
 			return 'sentinel';
 		});
@@ -132,7 +132,7 @@ describe('Router', function() {
 		});
 	});
 
-	it('should load path url if state is null and stores as router lastLoadedState as Json', function(done) {
+	it('should load path url if initial state is null and stores as router lastLoadedState as Json', function(done) {
 		var stub = sinon.stub(RequestScreen.prototype, 'load', function() {
 			return '{"sentinel":true}';
 		});
@@ -186,11 +186,11 @@ describe('Router', function() {
 		});
 	});
 
-	it('should load router state and store as router lastLoadedState', function(done) {
+	it('should load router initial state and store as router lastLoadedState', function(done) {
 		var router = new Router({
+			initialState: 'sentinel',
 			path: '/path',
-			component: CustomComponent,
-			state: 'sentinel'
+			component: CustomComponent
 		});
 		var screen = new Router.defaultScreen(router);
 		screen.load('/path').then(() => {
@@ -200,17 +200,17 @@ describe('Router', function() {
 		});
 	});
 
-	it('should load router state and store as json statically as Router active state', function(done) {
-		var state = {};
+	it('should load router initial state and store as json statically as Router active state', function(done) {
+		var initialState = {};
 		var router = new Router({
+			initialState: initialState,
 			path: '/path',
-			component: CustomComponent,
-			state: state
+			component: CustomComponent
 		});
 		var screen = new Router.defaultScreen(router);
 		screen.load('/path').then(() => {
 			screen.flip();
-			assert.strictEqual(state, Router.activeState);
+			assert.strictEqual(initialState, Router.activeState);
 			router.dispose();
 			done();
 		});
@@ -318,14 +318,14 @@ describe('Router', function() {
 		});
 		var screen = new Router.defaultScreen(router);
 		Router.activeComponent = router.createComponent();
-		Router.activeComponent.setAttrs = sinon.stub();
+		Router.activeComponent.setState = sinon.stub();
 		screen.flip();
-		assert.strictEqual(1, Router.activeComponent.setAttrs.callCount);
+		assert.strictEqual(1, Router.activeComponent.setState.callCount);
 		router.dispose();
 	});
 
 	it('should not reuse active component when routing to same component path if reuseActiveComponent is false', function() {
-		CustomComponent.prototype.setAttrs = sinon.stub();
+		CustomComponent.prototype.setState = sinon.stub();
 		CustomComponent.prototype.render = sinon.stub();
 		var router = new Router({
 			path: '/path',
@@ -335,7 +335,7 @@ describe('Router', function() {
 		var screen = new Router.defaultScreen(router);
 		Router.activeComponent = router.createComponent();
 		screen.flip();
-		assert.strictEqual(0, CustomComponent.prototype.setAttrs.callCount);
+		assert.strictEqual(0, CustomComponent.prototype.setState.callCount);
 		assert.strictEqual(1, CustomComponent.prototype.render.callCount);
 		router.dispose();
 	});
@@ -344,10 +344,9 @@ describe('Router', function() {
 
 class CustomComponent extends Component {
 }
-CustomComponent.RENDERER = SoyRenderer;
-SoyAop.registerTemplates('CustomComponent');
+CustomComponent.RENDERER = Soy;
+ComponentRegistry.register(CustomComponent);
 
 class RedirectComponent extends Component {
 }
-RedirectComponent.RENDERER = SoyRenderer;
-SoyAop.registerTemplates('RedirectComponent');
+RedirectComponent.RENDERER = Soy;

@@ -1,35 +1,63 @@
 /* jshint ignore:start */
-import Component from 'metal-component';
-import { SoyAop, SoyRenderer, SoyTemplates } from 'metal-soy';
-var Templates = SoyTemplates.get();
+import Component from 'metal-component/src/Component';
+import Soy from 'metal-soy/src/Soy';
+var templates;
+goog.loadModule(function(exports) {
+
 // This file was automatically generated from Image.soy.
 // Please don't edit this file by hand.
 
 /**
- * @fileoverview Templates in namespace Templates.Image.
+ * @fileoverview Templates in namespace Image.
+ * @public
  */
 
-if (typeof Templates.Image == 'undefined') { Templates.Image = {}; }
+goog.module('Image.incrementaldom');
+
+var soy = goog.require('soy');
+var soydata = goog.require('soydata');
+/** @suppress {extraRequire} */
+goog.require('goog.i18n.bidi');
+/** @suppress {extraRequire} */
+goog.require('goog.asserts');
+var IncrementalDom = goog.require('incrementaldom');
+var ie_open = IncrementalDom.elementOpen;
+var ie_close = IncrementalDom.elementClose;
+var ie_void = IncrementalDom.elementVoid;
+var ie_open_start = IncrementalDom.elementOpenStart;
+var ie_open_end = IncrementalDom.elementOpenEnd;
+var itext = IncrementalDom.text;
+var iattr = IncrementalDom.attr;
 
 
 /**
- * @param {Object.<string, *>=} opt_data
+ * @param {Object<string, *>=} opt_data
  * @param {(null|undefined)=} opt_ignored
- * @param {Object.<string, *>=} opt_ijData
- * @return {!soydata.SanitizedHtml}
+ * @param {Object<string, *>=} opt_ijData
+ * @return {void}
  * @suppress {checkTypes}
  */
-Templates.Image.render = function(opt_data, opt_ignored, opt_ijData) {
-  return soydata.VERY_UNSAFE.ordainSanitizedHtml('<img id="' + soy.$$escapeHtmlAttribute(opt_data.id) + '" width="' + soy.$$escapeHtmlAttribute(opt_data.width) + '" height="' + soy.$$escapeHtmlAttribute(opt_data.height) + '" src="' + soy.$$escapeHtmlAttribute(soy.$$filterNormalizeUri(opt_data.src)) + '">');
-};
+function $render(opt_data, opt_ignored, opt_ijData) {
+  ie_open('img', null, null,
+      'id', opt_data.id,
+      'width', opt_data.width,
+      'height', opt_data.height,
+      'src', opt_data.src);
+  ie_close('img');
+}
+exports.render = $render;
 if (goog.DEBUG) {
-  Templates.Image.render.soyTemplateName = 'Templates.Image.render';
+  $render.soyTemplateName = 'Image.render';
 }
 
-Templates.Image.render.params = ["height","id","src","width"];
+exports.render.params = ["height","id","src","width"];
+templates = exports;
+return exports;
+
+});
 
 class Image extends Component {}
-Image.RENDERER = SoyRenderer;
-SoyAop.registerTemplates('Image');
-export default Image;
+Soy.register(Image, templates);
+export default templates;
+export { Image, templates };
 /* jshint ignore:end */

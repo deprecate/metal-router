@@ -1,33 +1,21 @@
-{namespace Templates.Home}
+{namespace Home}
 
 /**
- */
-{template .render}
-	<a href="/demos/basic/">Home</a> | <a href="/demos/basic/home-page">Home Page</a> | <a href="/demos/basic/about">About</a> | <a href="/demos/basic/about-us">About Us</a> | <a href="/demos/basic/about-delayed">About Delayed</a>
-	{call .body data="all" /}
-	{call .footer data="all" /}
-{/template}
-
-/**
- * @param id
- */
-{template .body}
-	<p id="{$id}-body">
-		{call Templates.Image.render data="all"}
-			{param id: 'image' /}
-			{param width: 512 /}
-			{param height: 256 /}
-			{param src: 'img/img1.jpg' /}
-		{/call}
-	</p>
-{/template}
-
-/**
- * @param id
  * @param title
  */
-{template .footer}
-	<p id="{$id}-footer">
-		You are at page {$title}!
-	</p>
+{template .render}
+	<div>
+		<a href="/demos/basic/">Home</a> | <a href="/demos/basic/home-page">Home Page</a> | <a href="/demos/basic/about">About</a> | <a href="/demos/basic/about-us">About Us</a> | <a href="/demos/basic/about-delayed">About Delayed</a>
+		<p>
+			{call Image.render data="all"}
+				{param id: 'image' /}
+				{param width: 512 /}
+				{param height: 256 /}
+				{param src: 'img/img1.jpg' /}
+			{/call}
+		</p>
+		<p>
+			You are at page {$title}!
+		</p>
+	</div>
 {/template}
