@@ -102,6 +102,14 @@ Router.STATE = {
 	},
 
 	/**
+	 * Defines the node that the component will be rendered at.
+	 * @type {!string|Element}
+	 * @protected
+	 */
+	container: {
+	},
+
+	/**
 	 * Holds the load initial state value, function or deferred function that
 	 * resolves the component configurations.
 	 * @type {?Object|function(?string=)=}
@@ -117,16 +125,6 @@ Router.STATE = {
 	 * @protected
 	 */
 	path: {
-	},
-
-	/**
-	 * If set to true component will be decorated instead of rendered.
-	 * @type {boolean}
-	 * @default false
-	 */
-	progressiveEnhancement: {
-		validator: core.isBoolean,
-		value: false
 	},
 
 	/**
@@ -203,11 +201,7 @@ class ComponentScreen extends RequestScreen {
 				Router.activeComponent.dispose();
 			}
 			Router.activeComponent = router.createComponent(Router.activeState);
-			if (router.progressiveEnhancement) {
-				Router.activeComponent.decorate();
-			} else {
-				Router.activeComponent.render();
-			}
+			Router.activeComponent.render(router.container);
 		}
 	}
 

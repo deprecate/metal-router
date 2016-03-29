@@ -280,16 +280,16 @@ describe('Router', function() {
 		});
 	});
 
-	it('should decorate component when routing to path with progressive enhancement', function() {
-		CustomComponent.prototype.decorate = sinon.stub();
+	it.only('should render component inside container', function() {
+		CustomComponent.prototype.render = sinon.stub();
 		var router = new Router({
 			path: '/path',
-			component: CustomComponent,
-			progressiveEnhancement: true
+			container: '#container',
+			component: CustomComponent
 		});
 		var screen = new Router.defaultScreen(router);
 		screen.flip();
-		assert.strictEqual(1, CustomComponent.prototype.decorate.callCount);
+		assert.strictEqual('#container', CustomComponent.prototype.render.args[0][0]);
 		router.dispose();
 	});
 
