@@ -10,6 +10,9 @@ import Soy from 'metal-soy';
 
 import templates from './Router.soy';
 
+/**
+ * Router class responsible for routing links to components.
+ */
 class Router extends Component {
 
 	/**
@@ -35,11 +38,9 @@ class Router extends Component {
 	}
 
 	/**
-	 * Router class responsible for routing links to components.
-	 * @constructor
+	 * @inheritDoc
 	 */
-	constructor(opt_config) {
-		super(opt_config);
+	created() {
 		this.route = new Route(this.path, () => new Router.defaultScreen(this));
 		this.route.router = this;
 		Router.router().addRoutes(this.route);
@@ -55,11 +56,12 @@ class Router extends Component {
 
 	/**
 	 * Creates component instance.
-	 * @param  {?object=} opt_config
+	 * @param {Object=} opt_config
+	 * @param {Element=} opt_container
 	 * @return {Component}
 	 */
-	createComponent(opt_config) {
-		return new (this.resolveComponentConstructor())(opt_config);
+	createComponent(opt_config, opt_container) {
+		return new (this.resolveComponentConstructor())(opt_config, opt_container);
 	}
 
 	/**
@@ -200,8 +202,7 @@ class ComponentScreen extends RequestScreen {
 			if (Router.activeComponent) {
 				Router.activeComponent.dispose();
 			}
-			Router.activeComponent = router.createComponent(Router.activeState);
-			Router.activeComponent.render(router.container);
+			Router.activeComponent = router.createComponent(Router.activeState, router.container);
 		}
 	}
 
