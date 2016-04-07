@@ -217,7 +217,6 @@ describe('Router', function() {
 	});
 
 	it('should render component when routing to path', function() {
-		CustomComponent.prototype.render = sinon.stub();
 		var router = new Router({
 			path: '/path',
 			component: CustomComponent
@@ -227,13 +226,12 @@ describe('Router', function() {
 			return true;
 		};
 		screen.flip();
-		assert.strictEqual(1, CustomComponent.prototype.render.callCount);
+		assert.ok(Router.activeComponent instanceof CustomComponent);
+		assert.ok(Router.activeComponent.wasRendered);
 		router.dispose();
 	});
 
 	it('should render redirect component when routing to path that got redirected', function(done) {
-		CustomComponent.prototype.render = sinon.stub();
-		RedirectComponent.prototype.render = sinon.stub();
 		var router = new Router({
 			path: '/path',
 			component: CustomComponent
@@ -251,8 +249,8 @@ describe('Router', function() {
 		};
 		screen.load('/path').then(() => {
 			screen.flip();
-			assert.strictEqual(0, CustomComponent.prototype.render.callCount);
-			assert.strictEqual(1, RedirectComponent.prototype.render.callCount);
+			assert.ok(Router.activeComponent instanceof RedirectComponent);
+			assert.ok(Router.activeComponent.wasRendered);
 			router.dispose();
 			redirectRouter.dispose();
 			done();
@@ -260,7 +258,6 @@ describe('Router', function() {
 	});
 
 	it('should render original component when routing to path that got redirected without match route', function(done) {
-		CustomComponent.prototype.render = sinon.stub();
 		var router = new Router({
 			path: '/path',
 			component: CustomComponent
@@ -274,14 +271,15 @@ describe('Router', function() {
 		};
 		screen.load('/path').then(() => {
 			screen.flip();
-			assert.strictEqual(1, CustomComponent.prototype.render.callCount);
+			assert.ok(Router.activeComponent instanceof CustomComponent);
+			assert.ok(Router.activeComponent.wasRendered);
 			router.dispose();
 			done();
 		});
 	});
 
-	it.only('should render component inside container', function() {
-		CustomComponent.prototype.render = sinon.stub();
+	it('should render component inside container', function() {
+		CustomComponent.prototype.attach = sinon.stub();
 		var router = new Router({
 			path: '/path',
 			container: '#container',
@@ -289,12 +287,11 @@ describe('Router', function() {
 		});
 		var screen = new Router.defaultScreen(router);
 		screen.flip();
-		assert.strictEqual('#container', CustomComponent.prototype.render.args[0][0]);
+		assert.strictEqual('#container', CustomComponent.prototype.attach.args[0][0]);
 		router.dispose();
 	});
 
 	it('should dispose then render component when routing to new component path', function() {
-		CustomComponent.prototype.render = sinon.stub();
 		var router = new Router({
 			path: '/path',
 			component: CustomComponent
@@ -307,7 +304,9 @@ describe('Router', function() {
 		};
 		screen.flip();
 		assert.strictEqual(1, disposeStub.callCount);
-		assert.strictEqual(2, CustomComponent.prototype.render.callCount);
+		assert.ok(Router.activeComponent instanceof CustomComponent);
+		assert.ok(Router.activeComponent.wasRendered);
+		assert.ok(!Router.activeComponent.isDisposed());
 		router.dispose();
 	});
 
@@ -325,18 +324,16 @@ describe('Router', function() {
 	});
 
 	it('should not reuse active component when routing to same component path if reuseActiveComponent is false', function() {
-		CustomComponent.prototype.setState = sinon.stub();
-		CustomComponent.prototype.render = sinon.stub();
 		var router = new Router({
 			path: '/path',
 			component: CustomComponent,
 			reuseActiveComponent: false
 		});
 		var screen = new Router.defaultScreen(router);
+		var previousComponent = Router.activeComponent;
 		Router.activeComponent = router.createComponent();
 		screen.flip();
-		assert.strictEqual(0, CustomComponent.prototype.setState.callCount);
-		assert.strictEqual(1, CustomComponent.prototype.render.callCount);
+		assert.notStrictEqual(previousComponent, Router.activeComponent);
 		router.dispose();
 	});
 
