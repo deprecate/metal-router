@@ -1,6 +1,6 @@
 'use strict';
 
-import core from 'metal';
+import { core, object } from 'metal';
 import CancellablePromise from 'metal-promise';
 import { Component, ComponentRegistry } from 'metal-component';
 import App from 'senna';
@@ -21,11 +21,12 @@ class Router extends Component {
 	 * @param {Object|function()} initialState
 	 * @return {!Router}
 	 */
-	static route(path, component, initialState) {
+	static route(path, component, initialState, includeCurrentUrl) {
 		return new Router({
 			path,
 			component,
-			initialState
+			initialState,
+			includeCurrentUrl
 		}, false);
 	}
 
@@ -126,6 +127,14 @@ Router.STATE = {
 	},
 
 	/**
+	 * Flag indicating if the current url should be included in the component's
+	 * state.
+	 */
+	includeCurrentUrl: {
+		value: false
+	},
+
+	/**
 	 * Holds the load initial state value, function or deferred function that
 	 * resolves the component configurations.
 	 * @type {?Object|function(?string=)=}
@@ -209,6 +218,11 @@ class ComponentScreen extends RequestScreen {
 		}
 
 		Router.activeState = this.maybeParseLastLoadedStateAsJson();
+		if (router.includeCurrentUrl) {
+			Router.activeState = object.mixin({}, Router.activeState, {
+				currentUrl: router.path
+			});
+		}
 
 		if (this.router.reuseActiveComponent && Router.isRoutingToSameActiveComponent(router)) {
 			Router.activeComponent.setState(Router.activeState);

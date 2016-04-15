@@ -346,6 +346,27 @@ describe('Router', function() {
 		assert.strictEqual(CustomComponent, router.component);
 		assert.strictEqual(stateFn, router.initialState);
 	});
+
+	it('should include the current url in the active state if requested', function(done) {
+		var initialState = {
+			foo: 'foo'
+		};
+		var router = new Router({
+			initialState: initialState,
+			path: '/path',
+			component: CustomComponent,
+			includeCurrentUrl: true
+		});
+		var screen = new Router.defaultScreen(router);
+		screen.load('/path').then(() => {
+			screen.flip();
+			assert.notStrictEqual(initialState, Router.activeState);
+			assert.strictEqual('foo', Router.activeState.foo);
+			assert.strictEqual('/path', Router.activeState.currentUrl);
+			router.dispose();
+			done();
+		});
+	});
 });
 
 class CustomComponent extends Component {
