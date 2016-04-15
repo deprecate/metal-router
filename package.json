@@ -22,11 +22,11 @@
   ],
   "dependencies": {
     "bootstrap": "^3.3.6",
-    "metal": "metal/metal.js#master",
-    "metal-component": "metal/metal-component#master",
-    "metal-promise": "metal/metal-promise#master",
-    "metal-soy": "metal/metal-soy#master",
-    "senna": "liferay/senna.js#master"
+    "metal": "^1.0.0-rc.1",
+    "metal-component": "^1.0.0-rc.3",
+    "metal-promise": "^1.0.0-rc.2",
+    "metal-soy": "^1.0.0-rc.5",
+    "senna": "^1.0.1"
   },
   "devDependencies": {
     "gulp": "^3.8.11",
