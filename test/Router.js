@@ -337,6 +337,15 @@ describe('Router', function() {
 		router.dispose();
 	});
 
+	it('should create router instance without rendering it', function() {
+		var stateFn = () => {};
+		var router = Router.route('/path', CustomComponent, stateFn);
+
+		assert.ok(router instanceof Router);
+		assert.strictEqual('/path', router.path);
+		assert.strictEqual(CustomComponent, router.component);
+		assert.strictEqual(stateFn, router.initialState);
+	});
 });
 
 class CustomComponent extends Component {

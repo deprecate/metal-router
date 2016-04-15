@@ -14,6 +14,20 @@ import templates from './Router.soy';
  * Router class responsible for routing links to components.
  */
 class Router extends Component {
+	/**
+	 * Creates a new `Router` instance without rendering its placeholder element.
+	 * @param {string} path
+	 * @param {!Function} component
+	 * @param {Object|function()} initialState
+	 * @return {!Router}
+	 */
+	static route(path, component, initialState) {
+		return new Router({
+			path,
+			component,
+			initialState
+		}, false);
+	}
 
 	/**
 	 * Singleton to initializes and retrieve Senna.js application.
