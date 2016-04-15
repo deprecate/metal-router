@@ -53,6 +53,7 @@ if (goog.DEBUG) {
 }
 
 exports.render.params = ["height","id","src","width"];
+exports.render.types = {"height":"any","id":"any","src":"any","width":"any"};
 templates = exports;
 return exports;
 

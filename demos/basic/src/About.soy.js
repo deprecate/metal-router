@@ -91,6 +91,7 @@ if (goog.DEBUG) {
 }
 
 exports.render.params = ["title"];
+exports.render.types = {"title":"any"};
 templates = exports;
 return exports;
 
