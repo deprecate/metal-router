@@ -8,7 +8,7 @@
     "node": ">=0.12.0",
     "npm": ">=3.0.0"
   },
-  "main": "src/all/router.js",
+  "main": "src/Router.js",
   "files": [
     "src/**/*.js",
     "test/**/*.js"
