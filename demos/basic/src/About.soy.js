@@ -99,6 +99,6 @@ return exports;
 
 class About extends Component {}
 Soy.register(About, templates);
-export default templates;
 export { About, templates };
+export default templates;
 /* jshint ignore:end */

@@ -91,6 +91,6 @@ return exports;
 
 class Home extends Component {}
 Soy.register(Home, templates);
-export default templates;
 export { Home, templates };
+export default templates;
 /* jshint ignore:end */

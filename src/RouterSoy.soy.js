@@ -4,7 +4,7 @@ import Soy from 'metal-soy/src/Soy';
 var templates;
 goog.loadModule(function(exports) {
 
-// This file was automatically generated from Router.soy.
+// This file was automatically generated from RouterSoy.soy.
 // Please don't edit this file by hand.
 
 /**
@@ -59,6 +59,6 @@ return exports;
 
 class Router extends Component {}
 Soy.register(Router, templates);
-export default templates;
 export { Router, templates };
+export default templates;
 /* jshint ignore:end */

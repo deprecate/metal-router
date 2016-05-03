@@ -8,13 +8,13 @@
     "node": ">=0.12.0",
     "npm": ">=3.0.0"
   },
-  "main": "src/Router.js",
+  "main": "src/all/router.js",
   "files": [
     "src/**/*.js",
     "test/**/*.js"
   ],
   "scripts": {
-    "build:demo": "metal build -s demos/basic/src/**/*.js -d demos/basic/build --soySrc demos/**/*.soy --soyDest demos --soyDeps src/Router.soy",
+    "build:demo": "metal build -s demos/basic/src/**/*.js -d demos/basic/build --soySrc demos/**/*.soy --soyDest demos --soyDeps src/RouterSoy.soy",
     "test": "gulp test"
   },
   "keywords": [
@@ -22,10 +22,8 @@
   ],
   "dependencies": {
     "bootstrap": "^3.3.6",
-    "metal": "^1.0.0-rc.1",
-    "metal-component": "^1.0.0-rc.3",
+    "metal-soy": "^1.0.0-rc.9",
     "metal-promise": "^1.0.0-rc.2",
-    "metal-soy": "^1.0.0-rc.5",
     "senna": "^1.0.1"
   },
   "devDependencies": {

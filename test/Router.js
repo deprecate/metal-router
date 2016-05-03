@@ -1,9 +1,9 @@
 'use strict';
 
 import { Component, ComponentRegistry } from 'metal-component';
+import IncrementalDomRenderer from 'metal-incremental-dom';
 import RequestScreen from 'senna/src/screen/RequestScreen';
 import Router from '../src/Router';
-import Soy from 'metal-soy';
 
 describe('Router', function() {
 
@@ -371,9 +371,9 @@ describe('Router', function() {
 
 class CustomComponent extends Component {
 }
-CustomComponent.RENDERER = Soy;
+CustomComponent.RENDERER = IncrementalDomRenderer;
 ComponentRegistry.register(CustomComponent);
 
 class RedirectComponent extends Component {
 }
-RedirectComponent.RENDERER = Soy;
+RedirectComponent.RENDERER = IncrementalDomRenderer;

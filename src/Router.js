@@ -1,19 +1,24 @@
 'use strict';
 
 import { core, object } from 'metal';
+import App from 'senna';
 import CancellablePromise from 'metal-promise';
 import { Component, ComponentRegistry } from 'metal-component';
-import App from 'senna';
+import IncrementalDomRenderer from 'metal-incremental-dom';
 import Route from 'senna/src/route/Route';
 import RequestScreen from 'senna/src/screen/RequestScreen';
-import Soy from 'metal-soy';
-
-import templates from './Router.soy';
 
 /**
  * Router class responsible for routing links to components.
  */
 class Router extends Component {
+	/**
+	 * Renders the router placeholder.
+	 */
+	render() {
+		IncrementalDOM.elementVoid('link', null, [], 'rel', 'metal-route');
+	}
+
 	/**
 	 * Creates a new `Router` instance without rendering its placeholder element.
 	 * @param {string} path
@@ -92,8 +97,8 @@ class Router extends Component {
 	}
 
 }
-Soy.register(Router, templates);
 
+Router.RENDERER = IncrementalDomRenderer;
 
 /**
  * Router state definition.

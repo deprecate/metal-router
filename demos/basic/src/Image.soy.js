@@ -61,6 +61,6 @@ return exports;
 
 class Image extends Component {}
 Soy.register(Image, templates);
-export default templates;
 export { Image, templates };
+export default templates;
 /* jshint ignore:end */

@@ -8,7 +8,7 @@
   "evil": false,
   "forin": false,
   "globals": {
-    "sinon": true,
+    "IncrementalDOM": true,
     "soy": true,
     "soydata": true
   },

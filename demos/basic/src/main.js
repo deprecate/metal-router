@@ -2,7 +2,7 @@
 
 import { About } from './About.soy';
 import { Home } from './Home.soy';
-import Router from '../../../src/Router';
+import Router from '../../../src/RouterSoy';
 import './Image.soy';
 
 // Routing from JavaScript -----------------------------------------------------
