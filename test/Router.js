@@ -8,7 +8,7 @@ import Router from '../src/Router';
 describe('Router', function() {
 
 	beforeEach(function() {
-		Router.activeComponent = null;
+		Router.activeRouter = null;
 	});
 
 	it('should create singleton instance of router', function() {
@@ -37,41 +37,40 @@ describe('Router', function() {
 		assert.ok(!Router.router().hasRoutes());
 	});
 
-	it('should resolve component constructor from name', function() {
-		var router = new Router({
-			path: '/path',
-			component: 'CustomComponent'
-		});
-		assert.strictEqual(CustomComponent, router.resolveComponentConstructor());
-		router.dispose();
-	});
-
-	it('should resolve component constructor from class', function() {
+	it('should return "Router.defaultScreen" instance from route handler', function() {
 		var router = new Router({
 			path: '/path',
 			component: CustomComponent
 		});
-		assert.strictEqual(CustomComponent, router.resolveComponentConstructor());
+		assert.ok(router.route);
+		assert.ok(router.route.getHandler()() instanceof Router.defaultScreen);
+	});
+
+	it('should return null when no component is active yet', function() {
+		assert.strictEqual(null, Router.getActiveComponent());
+	});
+
+	it('should create component instance from constructor name', function() {
+		var router = new Router({
+			path: '/path',
+			component: 'CustomComponent',
+			isActive_: true
+		});
+		var keys = Object.keys(router.components);
+		var child = router.components[keys[0]];
+		assert.ok(child instanceof CustomComponent);
 		router.dispose();
 	});
 
-	it('should create component instance', function() {
+	it('should create component instance from constructor function', function() {
 		var router = new Router({
 			path: '/path',
-			component: CustomComponent
+			component: CustomComponent,
+			isActive_: true
 		});
-		assert.ok(router.createComponent() instanceof CustomComponent);
-		router.dispose();
-	});
-
-	it('should check if it\'s routing to the active component', function() {
-		var router = new Router({
-			path: '/path',
-			component: CustomComponent
-		});
-		assert.ok(!Router.isRoutingToSameActiveComponent(router));
-		Router.activeComponent = router.createComponent();
-		assert.ok(Router.isRoutingToSameActiveComponent(router));
+		var keys = Object.keys(router.components);
+		var child = router.components[keys[0]];
+		assert.ok(child instanceof CustomComponent);
 		router.dispose();
 	});
 
@@ -246,7 +245,7 @@ describe('Router', function() {
 		});
 	});
 
-	it('should render component when routing to path', function() {
+	it('should render component when routing to path', function(done) {
 		var router = new Router({
 			path: '/path',
 			component: CustomComponent
@@ -256,9 +255,13 @@ describe('Router', function() {
 			return true;
 		};
 		screen.flip();
-		assert.ok(Router.activeComponent instanceof CustomComponent);
-		assert.ok(Router.activeComponent.wasRendered);
-		router.dispose();
+
+		router.once('stateSynced', function() {
+			assert.ok(Router.getActiveComponent() instanceof CustomComponent);
+			assert.ok(Router.getActiveComponent().wasRendered);
+			router.dispose();
+			done();
+		});
 	});
 
 	it('should render redirect component when routing to path that got redirected', function(done) {
@@ -279,11 +282,13 @@ describe('Router', function() {
 		};
 		screen.load('/path').then(() => {
 			screen.flip();
-			assert.ok(Router.activeComponent instanceof RedirectComponent);
-			assert.ok(Router.activeComponent.wasRendered);
-			router.dispose();
-			redirectRouter.dispose();
-			done();
+			redirectRouter.once('stateSynced', function() {
+				assert.ok(Router.getActiveComponent() instanceof RedirectComponent);
+				assert.ok(Router.getActiveComponent().wasRendered);
+				router.dispose();
+				redirectRouter.dispose();
+				done();
+			});
 		});
 	});
 
@@ -301,73 +306,151 @@ describe('Router', function() {
 		};
 		screen.load('/path').then(() => {
 			screen.flip();
-			assert.ok(Router.activeComponent instanceof CustomComponent);
-			assert.ok(Router.activeComponent.wasRendered);
+			router.once('stateSynced', function() {
+				assert.ok(Router.getActiveComponent() instanceof CustomComponent);
+				assert.ok(Router.getActiveComponent().wasRendered);
+				router.dispose();
+				done();
+			});
+		});
+	});
+
+	it('should render component as the router element', function(done) {
+		var router = new Router({
+			path: '/path',
+			component: CustomComponent
+		});
+		var screen = new Router.defaultScreen(router);
+		screen.flip();
+		router.once('stateSynced', function() {
+			var comp = router.components.comp;
+			assert.strictEqual(comp.element, router.element);
 			router.dispose();
 			done();
 		});
 	});
 
-	it('should render component inside container', function() {
-		CustomComponent.prototype.attach = sinon.stub();
-		var router = new Router({
-			path: '/path',
-			container: '#container',
-			component: CustomComponent
-		});
-		var screen = new Router.defaultScreen(router);
-		screen.flip();
-		assert.strictEqual('#container', CustomComponent.prototype.attach.args[0][0]);
-		router.dispose();
-	});
-
-	it('should dispose then render component when routing to new component path', function() {
+	it('should dispose then render component when routing to new component path', function(done) {
 		var router = new Router({
 			path: '/path',
 			component: CustomComponent
 		});
-		var screen = new Router.defaultScreen(router);
-		screen.flip();
-		var disposeStub = sinon.stub();
-		Router.activeComponent = {
-			dispose: disposeStub
-		};
-		screen.flip();
-		assert.strictEqual(1, disposeStub.callCount);
-		assert.ok(Router.activeComponent instanceof CustomComponent);
-		assert.ok(Router.activeComponent.wasRendered);
-		assert.ok(!Router.activeComponent.isDisposed());
-		router.dispose();
+		var router2 = new Router({
+			path: '/path2',
+			component: CustomComponent2
+		});
+
+		var screen2 = new Router.defaultScreen(router2);
+		screen2.flip();
+		router2.once('stateSynced', function() {
+			var prevComponent = router2.getRouteComponent();
+			assert.strictEqual(prevComponent.element, router2.element);
+
+			var screen = new Router.defaultScreen(router);
+			screen.flip();
+
+			router.once('stateSynced', function() {
+				assert.ok(!router2.element);
+				assert.ok(prevComponent.isDisposed());
+				assert.ok(Router.getActiveComponent() instanceof CustomComponent);
+				assert.ok(Router.getActiveComponent().wasRendered);
+				assert.ok(!Router.getActiveComponent().isDisposed());
+				router.dispose();
+				router2.dispose();
+				done();
+			});
+		});
 	});
 
-	it('should update component when routing to same component path', function() {
+	it('should reuse component when routing to path that uses same constructor', function(done) {
 		var router = new Router({
 			path: '/path',
 			component: CustomComponent
 		});
-		var screen = new Router.defaultScreen(router);
-		Router.activeComponent = router.createComponent();
-		Router.activeComponent.setState = sinon.stub();
-		screen.flip();
-		assert.strictEqual(1, Router.activeComponent.setState.callCount);
-		router.dispose();
+		var router2 = new Router({
+			path: '/path2',
+			component: CustomComponent
+		});
+
+		var screen2 = new Router.defaultScreen(router2);
+		screen2.flip();
+		router2.once('stateSynced', function() {
+			var prevComponent = router2.getRouteComponent();
+			sinon.spy(prevComponent, 'dispose');
+
+			var screen = new Router.defaultScreen(router);
+			screen.flip();
+			assert.strictEqual(0, prevComponent.dispose.callCount);
+
+			router.once('stateSynced', function() {
+				assert.strictEqual(0, prevComponent.dispose.callCount);
+				assert.strictEqual(prevComponent, Router.getActiveComponent());
+				router.dispose();
+				router2.dispose();
+				done();
+			});
+		});
 	});
 
-	it('should not reuse active component when routing to same component path if reuseActiveComponent is false', function() {
+	it('should reuse component when routing to path that uses same constructor name', function(done) {
+		var router = new Router({
+			path: '/path',
+			component: 'CustomComponent'
+		});
+		var router2 = new Router({
+			path: '/path2',
+			component: CustomComponent
+		});
+
+		var screen2 = new Router.defaultScreen(router2);
+		screen2.flip();
+		router2.once('stateSynced', function() {
+			var prevComponent = router2.getRouteComponent();
+			sinon.spy(prevComponent, 'dispose');
+
+			var screen = new Router.defaultScreen(router);
+			screen.flip();
+			assert.strictEqual(0, prevComponent.dispose.callCount);
+
+			router.once('stateSynced', function() {
+			assert.strictEqual(0, prevComponent.dispose.callCount);
+				assert.strictEqual(prevComponent, Router.getActiveComponent());
+				router.dispose();
+				router2.dispose();
+				done();
+			});
+		});
+	});
+
+	it('should not reuse active component when routing to same component path if reuseActiveComponent is false', function(done) {
 		var router = new Router({
 			path: '/path',
 			component: CustomComponent,
 			reuseActiveComponent: false
 		});
-		var screen = new Router.defaultScreen(router);
-		var previousComponent = Router.activeComponent;
-		Router.activeComponent = router.createComponent();
-		screen.flip();
-		assert.notStrictEqual(previousComponent, Router.activeComponent);
-		router.dispose();
+		var router2 = new Router({
+			path: '/path2',
+			component: CustomComponent
+		});
+
+		var screen2 = new Router.defaultScreen(router2);
+		screen2.flip();
+		router2.once('stateSynced', function() {
+			var prevComponent = router2.getRouteComponent();
+			var screen = new Router.defaultScreen(router);
+			screen.flip();
+
+			router.once('stateSynced', function() {
+				assert.ok(prevComponent.isDisposed());
+				assert.notStrictEqual(prevComponent, Router.getActiveComponent());
+				router.dispose();
+				router2.dispose();
+				done();
+			});
+		});
 	});
 
-	it('should create router instance without rendering it', function() {
+	it('should create router instance through Router.route method', function() {
 		var stateFn = () => {};
 		var router = Router.route('/path', CustomComponent, stateFn);
 
@@ -403,6 +486,10 @@ class CustomComponent extends Component {
 }
 CustomComponent.RENDERER = IncrementalDomRenderer;
 ComponentRegistry.register(CustomComponent);
+
+class CustomComponent2 extends Component {
+}
+CustomComponent2.RENDERER = IncrementalDomRenderer;
 
 class RedirectComponent extends Component {
 }

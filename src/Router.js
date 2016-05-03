@@ -11,51 +11,6 @@ import IncrementalDomRenderer from 'metal-incremental-dom';
  */
 class Router extends Component {
 	/**
-	 * Renders the router placeholder.
-	 */
-	render() {
-		IncrementalDOM.elementVoid('link', null, [], 'rel', 'metal-route');
-	}
-
-	/**
-	 * Creates a new `Router` instance without rendering its placeholder element.
-	 * @param {string} path
-	 * @param {!Function} component
-	 * @param {Object|function()} initialState
-	 * @return {!Router}
-	 */
-	static route(path, component, initialState, includeCurrentUrl) {
-		return new Router({
-			path,
-			component,
-			initialState,
-			includeCurrentUrl
-		}, false);
-	}
-
-	/**
-	 * Singleton to initializes and retrieve Senna.js application.
-	 * @return {App}
-	 * @static
-	 */
-	static router() {
-		if (!Router.routerInstance) {
-			Router.routerInstance = new App();
-		}
-		return Router.routerInstance;
-	}
-
-	/**
-	 * Checks if instance of router is being routed to the same active
-	 * component.
-	 * @param {Router} router
-	 * @return {Boolean}
-	 */
-	static isRoutingToSameActiveComponent(router) {
-		return Router.activeComponent instanceof router.resolveComponentConstructor();
-	}
-
-	/**
 	 * @inheritDoc
 	 */
 	created() {
@@ -73,27 +28,95 @@ class Router extends Component {
 	}
 
 	/**
-	 * Creates component instance.
-	 * @param {Object=} opt_config
-	 * @param {Element=} opt_container
+	 * Gets the currently active component from the current router.
 	 * @return {Component}
 	 */
-	createComponent(opt_config, opt_container) {
-		return new (this.resolveComponentConstructor())(opt_config, opt_container);
+	static getActiveComponent() {
+		return Router.activeRouter ? Router.activeRouter.getRouteComponent() : null;
 	}
 
 	/**
-	 * Resolves component constructor from class name or reference.
+	 * Gets this router's component, if there is one.
 	 * @return {Component}
 	 */
-	resolveComponentConstructor() {
-		var componentConstructor = this.component;
-		if (core.isString(componentConstructor)) {
-			componentConstructor = ComponentRegistry.getConstructor(componentConstructor);
-		}
-		return componentConstructor;
+	getRouteComponent() {
+		return this.components.comp;
 	}
 
+	/**
+	 * Renders the component, if the current path is active, or nothing otherwise.
+	 */
+	render() {
+		if (this.isActive_) {
+			IncrementalDOM.elementVoid(
+				this.component,
+				null,
+				null,
+				'ref',
+				'comp',
+				...this.toArray_(Router.activeState)
+			);
+		}
+	}
+
+	/**
+	 * Creates a new `Router` instance without rendering its placeholder element.
+	 * @param {string} path
+	 * @param {!Function} component
+	 * @param {Object|function()} initialState
+	 * @param {Element=} opt_container
+	 * @return {!Router}
+	 */
+	static route(path, component, initialState, includeCurrentUrl, opt_container) {
+		return new Router({
+			path,
+			component,
+			initialState,
+			includeCurrentUrl
+		}, opt_container);
+	}
+
+	/**
+	 * Returns the single Senna.js application that handles all `Router`
+	 * instances, creating it if it hasn't been built yet.
+	 * @return {!App}
+	 * @static
+	 */
+	static router() {
+		if (!Router.routerInstance) {
+			Router.routerInstance = new App();
+		}
+		return Router.routerInstance;
+	}
+
+	/**
+	 * Setter for the "component" state property.
+	 * @param {!Function|string} ctor
+	 * @return {!Function}
+	 * @protected
+	 */
+	setterComponentFn_(ctor) {
+		if (core.isString(ctor)) {
+			ctor = ComponentRegistry.getConstructor(ctor);
+		}
+		return ctor;
+	}
+
+	/**
+	 * Converts the given object into an array to be passed to an incremental dom
+	 * call.
+	 * @param {!Object} config
+	 * @return {!Array}
+	 * @protected
+	 */
+	toArray_(config) {
+		var arr = [];
+		var keys = Object.keys(config || {});
+		for (var i = 0; i < keys.length; i++) {
+			arr.push(keys[i], config[keys[i]]);
+		}
+		return arr;
+	}
 }
 
 Router.RENDERER = IncrementalDomRenderer;
@@ -115,18 +138,11 @@ Router.STATE = {
 	},
 
 	/**
-	 * Metal component to render when path is accessed.
-	 * @type {Component}
+	 * The constructor of the component to render when path is accessed.
+	 * @type {!Function|string}
 	 */
 	component: {
-	},
-
-	/**
-	 * Defines the node that the component will be rendered at.
-	 * @type {!string|Element}
-	 * @protected
-	 */
-	container: {
+		setter: 'setterComponentFn_'
 	},
 
 	/**
@@ -157,6 +173,15 @@ Router.STATE = {
 	},
 
 	/**
+	 * Internal flag indicating if the router's path is currently active.
+	 * @type {boolean}
+	 */
+	isActive_: {
+		internal: true,
+		value: false
+	},
+
+	/**
 	 * Defines the path which will trigger the route handler responsible for
 	 * rendering the metal component.
 	 * @type {!string|RegExp|Function}
@@ -177,11 +202,11 @@ Router.STATE = {
 };
 
 /**
- * Holds the active component.
- * @type {Component}
+ * Holds the active router.
+ * @type {Router}
  * @static
  */
-Router.activeComponent = null;
+Router.activeRouter = null;
 
 /**
  * Holds the active render state.
@@ -240,14 +265,28 @@ class ComponentScreen extends RequestScreen {
 			});
 		}
 
-		if (this.router.reuseActiveComponent && Router.isRoutingToSameActiveComponent(router)) {
-			Router.activeComponent.setState(Router.activeState);
-		} else {
-			if (Router.activeComponent) {
-				Router.activeComponent.dispose();
+		if (Router.activeRouter) {
+			var activeRouter = Router.activeRouter;
+			activeRouter.isActive_ = false;
+
+			var activeComponent = Router.getActiveComponent();
+			if (router.reuseActiveComponent && (activeComponent instanceof router.component)) {
+				// This call is important, as otherwise the component will be disposed
+				// after `activeRouter` is updated, since the router won't render
+				// anything this time. We want to reuse it in another router though.
+				activeRouter.getRenderer().skipNextChildrenDisposal();
+				delete activeRouter.components.comp;
+				activeRouter.element = null;
+
+				activeComponent.getRenderer().owner_ = router;
+				activeComponent.getRenderer().parent_ = router;
+				router.components.comp = activeComponent;
+				router.element = activeComponent.element;
 			}
-			Router.activeComponent = router.createComponent(Router.activeState, router.container);
 		}
+
+		Router.activeRouter = router;
+		router.isActive_ = true;
 	}
 
 	/**
@@ -299,7 +338,6 @@ class ComponentScreen extends RequestScreen {
 			return core.isDefAndNotNull(state) ? state : {};
 		}
 	}
-
 }
 
 /**
