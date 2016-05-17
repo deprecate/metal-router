@@ -8,13 +8,17 @@
     "node": ">=0.12.0",
     "npm": ">=3.0.0"
   },
-  "main": "src/Router.js",
+  "jsnext:main": "src/Router.js",
+  "main": "lib/Router.js",
   "files": [
+    "lib",
     "src/**/*.js",
     "test/**/*.js"
   ],
   "scripts": {
     "build:demo": "metal build -s demos/basic/src/**/*.js -d demos/basic/build --soySrc demos/**/*.soy --soyDest demos --soyDeps src/RouterSoy.soy",
+    "compile": "babel --presets es2015 -d lib/ src/",
+    "prepublish": "npm run compile",
     "test": "gulp test"
   },
   "keywords": [
@@ -27,6 +31,8 @@
     "senna": "^1.0.1"
   },
   "devDependencies": {
+    "babel-cli": "^6.4.5",
+    "babel-preset-es2015": "^6.3.13",
     "gulp": "^3.8.11",
     "gulp-metal": "^1.0.0",
     "metal-cli": "^1.0.1",
