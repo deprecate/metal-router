@@ -1,12 +1,10 @@
 'use strict';
 
 import { core, object } from 'metal';
-import App from 'senna';
+import { App, RequestScreen, Route } from 'senna';
 import CancellablePromise from 'metal-promise';
 import { Component, ComponentRegistry } from 'metal-component';
 import IncrementalDomRenderer from 'metal-incremental-dom';
-import Route from 'senna/src/route/Route';
-import RequestScreen from 'senna/src/screen/RequestScreen';
 
 /**
  * Router class responsible for routing links to components.
