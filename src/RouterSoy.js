@@ -1,6 +1,6 @@
 'use strict';
 
-import templates from './RouterSoy.soy';
+import templates from './RouterSoy.soy.js';
 import Router from './Router';
 import Soy from 'metal-soy';
 
