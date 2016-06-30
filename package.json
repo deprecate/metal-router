@@ -17,7 +17,7 @@
   ],
   "scripts": {
     "build:demo": "metal build -s demos/basic/src/**/*.js -d demos/basic/build --soySrc demos/**/*.soy --soyDest demos --soyDeps src/RouterSoy.soy",
-    "compile": "babel --presets es2015 -d lib/ src/",
+    "compile": "babel --presets metal -d lib/ src/",
     "prepublish": "npm run compile",
     "test": "gulp test"
   },
@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "babel-cli": "^6.4.5",
-    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-metal": "^4.0.0",
     "gulp": "^3.8.11",
     "gulp-metal": "^1.7.1",
     "metal-cli": "^1.0.1",
