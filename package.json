@@ -26,8 +26,8 @@
   ],
   "dependencies": {
     "bootstrap": "^3.3.6",
-    "metal-promise": "^1.0.0-rc.2",
-    "metal-soy": "^1.0.0-rc.13",
+    "metal-promise": "^1.0.0",
+    "metal-soy": "^1.0.0",
     "senna": "^1.4.0"
   },
   "devDependencies": {
