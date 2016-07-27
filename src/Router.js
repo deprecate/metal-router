@@ -156,11 +156,11 @@ Router.STATE = {
 	},
 
 	/**
-	 * Flag indicating if the current url should be included in the component's
-	 * state.
+	 * Flag indicating if routing data (such as the current url) should be
+	 * included in the component's data.
 	 */
-	includeCurrentUrl: {
-		value: false
+	includeRoutingData: {
+		value: true
 	},
 
 	/**
@@ -250,7 +250,7 @@ class ComponentScreen extends RequestScreen {
 		}
 
 		Router.activeState = this.maybeParseLastLoadedStateAsJson();
-		if (router.includeCurrentUrl) {
+		if (router.includeRoutingData) {
 			Router.activeState = object.mixin({}, Router.activeState, {
 				currentUrl: router.path
 			});

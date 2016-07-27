@@ -231,8 +231,10 @@ describe('Router', function() {
 		});
 	});
 
-	it('should load router data and store as json statically as Router active state', function(done) {
-		var data = {};
+	it('should include the current url in the active state by default', function(done) {
+		var data = {
+			foo: 'foo'
+		};
 		var router = new Router({
 			data: data,
 			path: '/path',
@@ -241,7 +243,30 @@ describe('Router', function() {
 		var screen = new Router.defaultScreen(router);
 		screen.load('/path').then(() => {
 			screen.flip();
+			assert.notStrictEqual(data, Router.activeState);
+			assert.strictEqual('foo', Router.activeState.foo);
+			assert.strictEqual('/path', Router.activeState.currentUrl);
+			router.dispose();
+			done();
+		});
+	});
+
+	it('should not include the current url in the active state if "includeRoutingData" is set to false', function(done) {
+		var data = {
+			foo: 'foo'
+		};
+		var router = new Router({
+			data: data,
+			path: '/path',
+			component: CustomComponent,
+			includeRoutingData: false
+		});
+		var screen = new Router.defaultScreen(router);
+		screen.load('/path').then(() => {
+			screen.flip();
 			assert.strictEqual(data, Router.activeState);
+			assert.strictEqual('foo', Router.activeState.foo);
+			assert.ok(!Router.activeState.currentUrl);
 			router.dispose();
 			done();
 		});
@@ -449,27 +474,6 @@ describe('Router', function() {
 				router2.dispose();
 				done();
 			});
-		});
-	});
-
-	it('should include the current url in the active state if requested', function(done) {
-		var data = {
-			foo: 'foo'
-		};
-		var router = new Router({
-			data: data,
-			path: '/path',
-			component: CustomComponent,
-			includeCurrentUrl: true
-		});
-		var screen = new Router.defaultScreen(router);
-		screen.load('/path').then(() => {
-			screen.flip();
-			assert.notStrictEqual(data, Router.activeState);
-			assert.strictEqual('foo', Router.activeState.foo);
-			assert.strictEqual('/path', Router.activeState.currentUrl);
-			router.dispose();
-			done();
 		});
 	});
 });
