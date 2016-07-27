@@ -452,16 +452,6 @@ describe('Router', function() {
 		});
 	});
 
-	it('should create router instance through Router.route method', function() {
-		var stateFn = () => {};
-		var router = Router.route('/path', CustomComponent, stateFn);
-
-		assert.ok(router instanceof Router);
-		assert.strictEqual('/path', router.path);
-		assert.strictEqual(CustomComponent, router.component);
-		assert.strictEqual(stateFn, router.data);
-	});
-
 	it('should include the current url in the active state if requested', function(done) {
 		var data = {
 			foo: 'foo'

@@ -60,23 +60,6 @@ class Router extends Component {
 	}
 
 	/**
-	 * Creates a new `Router` instance without rendering its placeholder element.
-	 * @param {string} path
-	 * @param {!Function} component
-	 * @param {Object|function()} data
-	 * @param {Element=} opt_container
-	 * @return {!Router}
-	 */
-	static route(path, component, data, includeCurrentUrl, opt_container) {
-		return new Router({
-			path,
-			component,
-			data,
-			includeCurrentUrl
-		}, opt_container);
-	}
-
-	/**
 	 * Returns the single Senna.js application that handles all `Router`
 	 * instances, creating it if it hasn't been built yet.
 	 * @return {!App}
