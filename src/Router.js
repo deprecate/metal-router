@@ -63,15 +63,15 @@ class Router extends Component {
 	 * Creates a new `Router` instance without rendering its placeholder element.
 	 * @param {string} path
 	 * @param {!Function} component
-	 * @param {Object|function()} initialState
+	 * @param {Object|function()} data
 	 * @param {Element=} opt_container
 	 * @return {!Router}
 	 */
-	static route(path, component, initialState, includeCurrentUrl, opt_container) {
+	static route(path, component, data, includeCurrentUrl, opt_container) {
 		return new Router({
 			path,
 			component,
-			initialState,
+			data,
 			includeCurrentUrl
 		}, opt_container);
 	}
@@ -146,6 +146,15 @@ Router.STATE = {
 	},
 
 	/**
+	 * Holds the load data value, function or deferred function that
+	 * resolves the component configurations.
+	 * @type {?Object|function(?string=)=}
+	 */
+	data: {
+		setter: (val) => val ? (core.isFunction(val) ? val : () => val) : null
+	},
+
+	/**
 	 * The timeout in ms used by `Router.defaultScreen` in ajax requests for
 	 * fetching data.
 	 * @type {?number}
@@ -161,15 +170,6 @@ Router.STATE = {
 	 */
 	includeCurrentUrl: {
 		value: false
-	},
-
-	/**
-	 * Holds the load initial state value, function or deferred function that
-	 * resolves the component configurations.
-	 * @type {?Object|function(?string=)=}
-	 */
-	initialState: {
-		setter: (val) => val ? (core.isFunction(val) ? val : () => val) : null
 	},
 
 	/**
@@ -295,10 +295,10 @@ class ComponentScreen extends RequestScreen {
 	load(path) {
 		this.setCacheable(this.router.cacheable);
 		var deferred = CancellablePromise.resolve();
-		if (core.isNull(this.router.initialState)) {
+		if (core.isNull(this.router.data)) {
 			deferred = deferred.then(() => super.load(path));
 		} else {
-			deferred = deferred.then(() => this.router.initialState(path));
+			deferred = deferred.then(() => this.router.data(path));
 		}
 		return deferred.then((loadedState) => {
 			this.router.lastPath = path;

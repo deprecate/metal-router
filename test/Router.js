@@ -74,25 +74,25 @@ describe('Router', function() {
 		router.dispose();
 	});
 
-	it('should router accept initial state as function', function() {
-		var initialState = sinon.stub();
+	it('should router accept data as function', function() {
+		var data = sinon.stub();
 		var router = new Router({
-			initialState: initialState,
+			data: data,
 			path: '/path',
 			component: CustomComponent
 		});
-		assert.strictEqual(initialState, router.initialState);
+		assert.strictEqual(data, router.data);
 		router.dispose();
 	});
 
-	it('should router wrap initial state object or deferred in a function', function() {
-		var initialState = new Promise(function() {});
+	it('should router wrap data object or deferred in a function', function() {
+		var data = new Promise(function() {});
 		var router = new Router({
-			initialState: initialState,
+			data: data,
 			path: '/path',
 			component: CustomComponent
 		});
-		assert.strictEqual(initialState, router.initialState());
+		assert.strictEqual(data, router.data());
 		router.dispose();
 	});
 
@@ -143,7 +143,7 @@ describe('Router', function() {
 		assert.strictEqual(30000, screen.timeout);
 	});
 
-	it('should load path url if initial state is null and stores as router lastLoadedState', function(done) {
+	it('should load path url if data is null and stores as router lastLoadedState', function(done) {
 		var stub = sinon.stub(RequestScreen.prototype, 'load', function() {
 			return 'sentinel';
 		});
@@ -161,7 +161,7 @@ describe('Router', function() {
 		});
 	});
 
-	it('should load path url if initial state is null and stores as router lastLoadedState as Json', function(done) {
+	it('should load path url if data is null and stores as router lastLoadedState as Json', function(done) {
 		var stub = sinon.stub(RequestScreen.prototype, 'load', function() {
 			return '{"sentinel":true}';
 		});
@@ -215,9 +215,9 @@ describe('Router', function() {
 		});
 	});
 
-	it('should load router initial state and store as router lastLoadedState', function(done) {
+	it('should load router data and store as router lastLoadedState', function(done) {
 		var router = new Router({
-			initialState: 'sentinel',
+			data: 'sentinel',
 			path: '/path',
 			component: CustomComponent
 		});
@@ -229,17 +229,17 @@ describe('Router', function() {
 		});
 	});
 
-	it('should load router initial state and store as json statically as Router active state', function(done) {
-		var initialState = {};
+	it('should load router data and store as json statically as Router active state', function(done) {
+		var data = {};
 		var router = new Router({
-			initialState: initialState,
+			data: data,
 			path: '/path',
 			component: CustomComponent
 		});
 		var screen = new Router.defaultScreen(router);
 		screen.load('/path').then(() => {
 			screen.flip();
-			assert.strictEqual(initialState, Router.activeState);
+			assert.strictEqual(data, Router.activeState);
 			router.dispose();
 			done();
 		});
@@ -457,15 +457,15 @@ describe('Router', function() {
 		assert.ok(router instanceof Router);
 		assert.strictEqual('/path', router.path);
 		assert.strictEqual(CustomComponent, router.component);
-		assert.strictEqual(stateFn, router.initialState);
+		assert.strictEqual(stateFn, router.data);
 	});
 
 	it('should include the current url in the active state if requested', function(done) {
-		var initialState = {
+		var data = {
 			foo: 'foo'
 		};
 		var router = new Router({
-			initialState: initialState,
+			data: data,
 			path: '/path',
 			component: CustomComponent,
 			includeCurrentUrl: true
@@ -473,7 +473,7 @@ describe('Router', function() {
 		var screen = new Router.defaultScreen(router);
 		screen.load('/path').then(() => {
 			screen.flip();
-			assert.notStrictEqual(initialState, Router.activeState);
+			assert.notStrictEqual(data, Router.activeState);
 			assert.strictEqual('foo', Router.activeState.foo);
 			assert.strictEqual('/path', Router.activeState.currentUrl);
 			router.dispose();

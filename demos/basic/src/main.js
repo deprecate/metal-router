@@ -10,7 +10,7 @@ import './Image.soy';
 new Router({
 	path: '/demos/basic',
 	component: Home,
-	initialState: {
+	data: {
 		title: 'Home'
 	}
 });
@@ -18,7 +18,7 @@ new Router({
 new Router({
 	path: '/demos/basic/home-page',
 	component: Home,
-	initialState: {
+	data: {
 		title: 'Home Page'
 	}
 });
@@ -26,7 +26,7 @@ new Router({
 new Router({
 	path: '/demos/basic/about',
 	component: About,
-	initialState: {
+	data: {
 		title: 'About'
 	}
 });
@@ -34,7 +34,7 @@ new Router({
 new Router({
 	path: '/demos/basic/about-us',
 	component: About,
-	initialState: {
+	data: {
 		title: 'About Us'
 	}
 });
@@ -42,7 +42,7 @@ new Router({
 new Router({
 	path: '/demos/basic/about-delayed',
 	component: About,
-	initialState: function() {
+	data: function() {
 		return new Promise((resolve) => setTimeout(() => resolve({ title: 'About Delayed' }), 2000));
 	}
 });
