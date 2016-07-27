@@ -148,10 +148,18 @@ Router.STATE = {
 	/**
 	 * Holds the load data value, function or deferred function that
 	 * resolves the component configurations.
-	 * @type {?Object|function(?string=)=}
+	 * @type {!Object|function(?string=)}
 	 */
 	data: {
-		setter: (val) => val ? (core.isFunction(val) ? val : () => val) : null
+		setter: (val) => core.isFunction(val) ? val : () => (val || {})
+	},
+
+	/**
+	 * Flag indicating if the component's data should be loaded via a request
+	 * to the server. By default the data will come from `data` instead.
+	 */
+	fetch: {
+		value: false
 	},
 
 	/**
@@ -295,7 +303,7 @@ class ComponentScreen extends RequestScreen {
 	load(path) {
 		this.setCacheable(this.router.cacheable);
 		var deferred = CancellablePromise.resolve();
-		if (core.isNull(this.router.data)) {
+		if (this.router.fetch) {
 			deferred = deferred.then(() => super.load(path));
 		} else {
 			deferred = deferred.then(() => this.router.data(path));

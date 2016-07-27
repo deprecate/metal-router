@@ -143,13 +143,14 @@ describe('Router', function() {
 		assert.strictEqual(30000, screen.timeout);
 	});
 
-	it('should load path url if data is null and stores as router lastLoadedState', function(done) {
+	it('should load path url and stores as router lastLoadedState if "fetch" is true', function(done) {
 		var stub = sinon.stub(RequestScreen.prototype, 'load', function() {
 			return 'sentinel';
 		});
 		var router = new Router({
 			path: '/path',
-			component: CustomComponent
+			component: CustomComponent,
+			fetch: true
 		});
 		var screen = new Router.defaultScreen(router);
 		screen.load('/path').then(() => {
@@ -161,13 +162,14 @@ describe('Router', function() {
 		});
 	});
 
-	it('should load path url if data is null and stores as router lastLoadedState as Json', function(done) {
+	it('should load path url and stores as router lastLoadedState as Json if "fetch" is true', function(done) {
 		var stub = sinon.stub(RequestScreen.prototype, 'load', function() {
 			return '{"sentinel":true}';
 		});
 		var router = new Router({
 			path: '/path',
-			component: CustomComponent
+			component: CustomComponent,
+			fetch: true
 		});
 		var screen = new Router.defaultScreen(router);
 		screen.load('/path').then(() => {
