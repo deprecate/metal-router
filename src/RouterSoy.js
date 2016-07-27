@@ -8,9 +8,6 @@ import Soy from 'metal-soy';
  * Same as `Router`, but can also be called within soy templates.
  */
 class RouterSoy extends Router {
-	shouldUpdate() {
-		return true;
-	}
 }
 
 Soy.register(RouterSoy, templates);

@@ -86,6 +86,15 @@ class Router extends Component {
 	}
 
 	/**
+	 * Makes sure that the `Router` is only rerendered if either `isActive_` or
+	 * `component` has changed. The other state properties are not used for
+	 * rendering.
+	 */
+	shouldUpdate(changes) {
+		return changes.isActive_ || changes.component;
+	}
+
+	/**
 	 * Converts the given object into an array to be passed to an incremental dom
 	 * call.
 	 * @param {!Object} config

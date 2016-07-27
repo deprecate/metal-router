@@ -56,8 +56,7 @@ describe('Router', function() {
 			component: 'CustomComponent',
 			isActive_: true
 		});
-		var keys = Object.keys(router.components);
-		var child = router.components[keys[0]];
+		var child = router.components.comp;
 		assert.ok(child instanceof CustomComponent);
 		router.dispose();
 	});
@@ -68,8 +67,7 @@ describe('Router', function() {
 			component: CustomComponent,
 			isActive_: true
 		});
-		var keys = Object.keys(router.components);
-		var child = router.components[keys[0]];
+		var child = router.components.comp;
 		assert.ok(child instanceof CustomComponent);
 		router.dispose();
 	});
@@ -354,6 +352,49 @@ describe('Router', function() {
 			assert.strictEqual(comp.element, router.element);
 			router.dispose();
 			done();
+		});
+	});
+
+	it('should rerender if component constructor changes', function(done) {
+		var router = new Router({
+			path: '/path',
+			component: CustomComponent
+		});
+		var screen = new Router.defaultScreen(router);
+		screen.flip();
+		router.once('stateSynced', function() {
+			var listener = sinon.stub();
+			router.on('rendered', listener);
+
+			var comp = router.getRouteComponent();
+			router.component = CustomComponent2;
+			router.once('stateSynced', function() {
+				assert.strictEqual(1, listener.callCount);
+				assert.notStrictEqual(comp, router.getRouteComponent());
+				assert.ok(router.getRouteComponent() instanceof CustomComponent2);
+				router.dispose();
+				done();
+			});
+		});
+	});
+
+	it('should not rerender if any state property other than "component" or "isActive_" changes', function(done) {
+		var router = new Router({
+			path: '/path',
+			component: CustomComponent
+		});
+		var screen = new Router.defaultScreen(router);
+		screen.flip();
+		router.once('stateSynced', function() {
+			var listener = sinon.stub();
+			router.on('rendered', listener);
+			router.fetch = true;
+
+			router.once('stateSynced', function() {
+				assert.strictEqual(0, listener.callCount);
+				router.dispose();
+				done();
+			});
 		});
 	});
 
