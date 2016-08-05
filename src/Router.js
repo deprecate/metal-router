@@ -253,6 +253,7 @@ class ComponentScreen extends RequestScreen {
 	 */
 	flip() {
 		var router = this.router;
+		var path = router.lastPath;
 		var redirectRouter = this.maybeFindRedirectRouter();
 		if (redirectRouter) {
 			router = redirectRouter;
@@ -261,7 +262,10 @@ class ComponentScreen extends RequestScreen {
 		Router.activeState = this.maybeParseLastLoadedStateAsJson();
 		if (router.includeRoutingData) {
 			Router.activeState = object.mixin({}, Router.activeState, {
-				currentUrl: router.path
+				router: {
+					currentUrl: path,
+					params: router.route.extractParams(path)
+				}
 			});
 		}
 

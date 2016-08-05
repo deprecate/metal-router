@@ -28,7 +28,7 @@
     "bootstrap": "^3.3.6",
     "metal-promise": "^2.0.0",
     "metal-soy": "^2.0.0",
-    "senna": "^1.4.0"
+    "senna": "^2.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.4.5",

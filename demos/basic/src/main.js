@@ -24,18 +24,10 @@ new Router({
 });
 
 new Router({
-	path: '/demos/basic/about',
+	path: '/demos/basic/about/:name(\\w+)?',
 	component: About,
 	data: {
 		title: 'About'
-	}
-});
-
-new Router({
-	path: '/demos/basic/about-us',
-	component: About,
-	data: {
-		title: 'About Us'
 	}
 });
 

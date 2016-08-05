@@ -2,10 +2,11 @@
 
 /**
  * @param title
+ * @param router
  */
 {template .render}
 	<div>
-		<a href="/demos/basic/">Home</a> | <a href="/demos/basic/home-page">Home Page</a> | <a href="/demos/basic/about">About</a> | <a href="/demos/basic/about-us">About Us</a> | <a href="/demos/basic/about-delayed">About Delayed</a>
+		<a href="/demos/basic/">Home</a> | <a href="/demos/basic/home-page">Home Page</a> | <a href="/demos/basic/about">About</a> | <a href="/demos/basic/about/us">About Us</a> | <a href="/demos/basic/about-delayed">About Delayed</a>
 		<p>
 			{call Image.render data="all"}
 				{param id: 'image' /}
@@ -15,7 +16,7 @@
 			{/call}
 		</p>
 		<p>
-			You are at page {$title}!
+			You are at page {$title}{$router.params.name ? ' ' + $router.params.name : ''}!
 		</p>
 	</div>
 {/template}
