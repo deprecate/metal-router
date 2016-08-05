@@ -1,0 +1,29 @@
+{namespace BasicSoy}
+
+/**
+ * @param loadDelayedData
+ */
+{template .render}
+	<div class="example-basic-soy">
+		{call Router.render}
+			{param path: '/demos/basic-soy' /}
+			{param component: 'Home' /}
+			{param data: ['title': 'Home'] /}
+		{/call}
+		{call Router.render}
+			{param path: '/demos/basic-soy/home-page' /}
+			{param component: 'Home' /}
+			{param data: ['title': 'Home Page'] /}
+		{/call}
+		{call Router.render}
+			{param path: '/demos/basic-soy/about/:name(\\w+)?' /}
+			{param component: 'About' /}
+			{param data: ['title': 'About'] /}
+		{/call}
+		{call Router.render}
+			{param path: '/demos/basic-soy/about-delayed' /}
+			{param component: 'About' /}
+			{param data: $loadDelayedData /}
+		{/call}
+	</div>
+{/template}

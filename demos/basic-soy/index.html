@@ -10,7 +10,7 @@
 </head>
 <body>
 	<div class="senna-loading-bar"></div>
-	<a href="/demos/basic/">Home</a> | <a href="/demos/basic/home-page">Home Page</a> | <a href="/demos/basic/about">About</a> | <a href="/demos/basic/about/us">About Us</a> | <a href="/demos/basic/about-delayed">About Delayed</a>
+	<a href="/demos/basic-soy/">Home</a> | <a href="/demos/basic-soy/home-page">Home Page</a> | <a href="/demos/basic-soy/about">About</a> | <a href="/demos/basic-soy/about/us">About Us</a> | <a href="/demos/basic-soy/about-delayed">About Delayed</a>
 	<script src="build/metal.js"></script>
 	<script>
 		metal.Router.router().on('startNavigate', function(event) {
@@ -20,7 +20,7 @@
 		metal.Router.router().on('endNavigate', function() {
 			console.log('-> Navigation done');
 		});
-		metal.Basic.run();
+		metal.Component.render(metal.BasicSoy);
 	</script>
 </body>
 </html>
