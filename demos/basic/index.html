@@ -12,6 +12,13 @@
 	<div class="senna-loading-bar"></div>
 	<script src="build/metal.js"></script>
 	<script>
+		metal.Router.router().on('startNavigate', function(event) {
+			console.log('-> Navigating to ' + event.path);
+		});
+
+		metal.Router.router().on('endNavigate', function() {
+			console.log('-> Navigation done');
+		});
 		metal.Basic.run();
 	</script>
 </body>
