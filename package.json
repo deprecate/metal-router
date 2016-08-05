@@ -16,7 +16,7 @@
     "test/**/*.js"
   ],
   "scripts": {
-    "build:demo": "metal build -s demos/basic/src/**/*.js -d demos/basic/build --soySrc demos/**/*.soy --soyDest demos --soyDeps src/RouterSoy.soy",
+    "build:demo": "metal build -s demos/src/**/*.js -d demos/build --soySrc demos/src/**/*.soy --soyDest demos/src --soyDeps src/RouterSoy.soy",
     "compile": "babel --presets metal -d lib/ src/",
     "prepublish": "gulp soy && npm run compile",
     "test": "gulp test"
