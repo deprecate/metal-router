@@ -130,6 +130,16 @@ Router.STATE = {
 	},
 
 	/**
+	 * The timeout in ms used by `Router.defaultScreen` in ajax requests for
+	 * fetching data.
+	 * @type {?number}
+	 */
+	fetchTimeout: {
+		validator: val => core.isNumber(val) || !core.isDefAndNotNull(val),
+		value: 30000
+	},
+
+	/**
 	 * Flag indicating if the current url should be included in the component's
 	 * state.
 	 */
@@ -150,7 +160,6 @@ Router.STATE = {
 	 * Defines the path which will trigger the route handler responsible for
 	 * rendering the metal component.
 	 * @type {!string|RegExp|Function}
-	 * @protected
 	 */
 	path: {
 	},
@@ -198,6 +207,10 @@ class ComponentScreen extends RequestScreen {
 		 * @type {Router}
 		 */
 		this.router = router;
+
+		// Sets the timeout used by `RequestScreen` to be the one specified by
+		// the router.
+		this.timeout = router.fetchTimeout;
 	}
 
 	/**
