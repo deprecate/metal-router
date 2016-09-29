@@ -114,6 +114,36 @@ describe('Router', function() {
 		});
 	});
 
+	it('should set screen timeout to value specified by router', function() {
+		var router = new Router({
+			path: '/path',
+			component: CustomComponent,
+			fetchTimeout: 100
+		});
+		var screen = new Router.defaultScreen(router);
+		assert.strictEqual(100, screen.timeout);
+	});
+
+	it('should set screen timeout to null if specified by router', function() {
+		var router = new Router({
+			path: '/path',
+			component: CustomComponent,
+			fetchTimeout: null
+		});
+		var screen = new Router.defaultScreen(router);
+		assert.strictEqual(null, screen.timeout);
+	});
+
+	it('should not change screen timeout if value specified by router is invalid', function() {
+		var router = new Router({
+			path: '/path',
+			component: CustomComponent,
+			fetchTimeout: 'foo'
+		});
+		var screen = new Router.defaultScreen(router);
+		assert.strictEqual(30000, screen.timeout);
+	});
+
 	it('should load path url if initial state is null and stores as router lastLoadedState', function(done) {
 		var stub = sinon.stub(RequestScreen.prototype, 'load', function() {
 			return 'sentinel';
