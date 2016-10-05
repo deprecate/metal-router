@@ -3,7 +3,7 @@
 import { About } from './About.soy';
 import Component from 'metal-component';
 import { Home } from './Home.soy';
-import Router from '../../src/RouterSoy';
+import Router from '../../src/all/router.js';
 import './Image.soy';
 
 // Routing from JavaScript -----------------------------------------------------

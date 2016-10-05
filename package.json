@@ -8,15 +8,15 @@
     "node": ">=0.12.0",
     "npm": ">=3.0.0"
   },
-  "jsnext:main": "src/Router.js",
-  "main": "lib/Router.js",
+  "jsnext:main": "src/all/router.js",
+  "main": "lib/all/router.js",
   "files": [
     "lib",
     "src/**/*.js",
     "test/**/*.js"
   ],
   "scripts": {
-    "build:demo": "metal build -s demos/src/**/*.js -d demos/build --soySrc demos/src/**/*.soy --soyDest demos/src --soyDeps src/RouterSoy.soy",
+    "build:demo": "gulp soy && metal build -s demos/src/**/*.js -d demos/build --soySrc demos/src/**/*.soy --soyDest demos/src --soyDeps src/RouterSoy.soy",
     "compile": "babel --presets metal -d lib/ src/",
     "prepublish": "gulp soy && npm run compile",
     "test": "gulp test"
