@@ -35,7 +35,7 @@
     "babel-preset-metal": "^4.0.0",
     "gulp": "^3.8.11",
     "gulp-metal": "^1.7.1",
-    "metal-cli": "^1.0.1",
+    "metal-cli": "^2.0.0",
     "metal-karma-config": "^2.1.0"
   }
 }
