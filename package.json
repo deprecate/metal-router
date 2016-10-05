@@ -11,14 +11,14 @@
   "jsnext:main": "src/all/router.js",
   "main": "lib/all/router.js",
   "files": [
+    "build",
     "lib",
-    "src/**/*.js",
-    "test/**/*.js"
+    "src"
   ],
   "scripts": {
     "build:demo": "gulp soy && metal build -s demos/src/**/*.js -d demos/build --soySrc demos/src/**/*.soy --soyDest demos/src --soyDeps src/RouterSoy.soy",
     "compile": "babel --presets metal -d lib/ src/",
-    "prepublish": "gulp soy && npm run compile",
+    "prepublish": "gulp && npm run compile",
     "test": "gulp test"
   },
   "keywords": [
@@ -36,6 +36,7 @@
     "gulp": "^3.8.11",
     "gulp-metal": "^1.7.1",
     "metal-cli": "^2.0.0",
-    "metal-karma-config": "^2.1.0"
+    "metal-karma-config": "^2.1.0",
+    "run-sequence": "^1.2.2"
   }
 }
