@@ -1,5 +1,7 @@
 'use strict';
 
+import dom from 'metal-dom';
+import { utils } from 'senna';
 import { Component, ComponentRegistry } from 'metal-component';
 import IncrementalDomRenderer from 'metal-incremental-dom';
 import RequestScreen from 'senna/src/screen/RequestScreen';
@@ -359,6 +361,20 @@ describe('Router', function() {
 				done();
 			});
 		});
+	});
+
+	it('should render component with right element when routing to path', function() {
+		sinon.stub(utils, 'getCurrentBrowserPath').returns('/current/path');
+		dom.append(document.body, '<div id="el"><div></div></div>');
+		var element = document.querySelector('#el > div');
+		var router = new Router({
+			element: '#el > div',
+			path: '/current/path',
+			component: CustomComponent
+		});
+		utils.getCurrentBrowserPath.restore();
+		assert.strictEqual(element, router.element);
+		assert.equal('el', element.parentNode.id);
 	});
 
 	it('should render redirect component when routing to path that got redirected', function(done) {

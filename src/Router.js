@@ -1,7 +1,7 @@
 'use strict';
 
 import { core, object } from 'metal';
-import { App, RequestScreen, Route } from 'senna';
+import { utils, App, RequestScreen, Route } from 'senna';
 import CancellablePromise from 'metal-promise';
 import { Component, ComponentRegistry } from 'metal-component';
 import IncrementalDomRenderer from 'metal-incremental-dom';
@@ -33,6 +33,16 @@ class Router extends Component {
 	 */
 	static getActiveComponent() {
 		return Router.activeRouter ? Router.activeRouter.getRouteComponent() : null;
+	}
+	
+	/**
+	 * Gets the default value for the `isActive` state property.
+	 * @return {boolean}
+	 * @protected
+	 */
+	getDefIsActiveValue_() {
+		var currentPath = utils.getCurrentBrowserPath();
+		return Router.router().findRoute(currentPath) === this.route;
 	}
 
 	/**
@@ -188,7 +198,7 @@ Router.STATE = {
 	 */
 	isActive_: {
 		internal: true,
-		value: false
+		valueFn: 'getDefIsActiveValue_'
 	},
 
 	/**
