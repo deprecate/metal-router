@@ -18,6 +18,24 @@ class Router extends Component {
 		this.route.router = this;
 		Router.router().addRoutes(this.route);
 	}
+	
+	/**
+	 * Addsrouting data to the given state object.
+	 * @param {string} path
+	 * @param {!Object} state
+	 * @return {!Object}
+	 */
+	addRoutingData(path, state) {
+		if (this.includeRoutingData) {
+			return object.mixin({}, state, {
+				router: {
+					currentUrl: path,
+					params: this.route.extractParams(path)
+				}
+			});
+		}
+		return state;
+	}
 
 	/**
 	 * @inheritDoc
@@ -58,13 +76,24 @@ class Router extends Component {
 	 */
 	render() {
 		if (this.isActive_) {
+			var state = Router.activeState;
+			if (!state && this.data) {
+				const path = utils.getCurrentBrowserPath();
+				state = this.data(path);
+				if (state.then) {
+					// Ignore promises for now. TODO: Handle this better.
+					state = {};
+				} else {
+					state = this.addRoutingData(path, state);
+				}
+			}
 			IncrementalDOM.elementVoid(
 				this.component,
 				null,
 				null,
 				'ref',
 				'comp',
-				...this.toArray_(Router.activeState)
+				...this.toArray_(state)
 			);
 		}
 	}
@@ -290,14 +319,7 @@ class ComponentScreen extends RequestScreen {
 		}
 
 		Router.activeState = this.maybeParseLastLoadedStateAsJson();
-		if (router.includeRoutingData) {
-			Router.activeState = object.mixin({}, Router.activeState, {
-				router: {
-					currentUrl: path,
-					params: router.route.extractParams(path)
-				}
-			});
-		}
+		Router.activeState = this.router.addRoutingData(path, Router.activeState);
 
 		if (Router.activeRouter) {
 			var activeRouter = Router.activeRouter;
