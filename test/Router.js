@@ -181,6 +181,48 @@ describe('Router', function() {
 		});
 	});
 
+	it('should fetch data from url specified by "fetchUrl" when "fetch" is true', function(done) {
+		var stub = sinon.stub(RequestScreen.prototype, 'load', function() {
+			return 'sentinel';
+		});
+		var router = new Router({
+			path: '/path',
+			component: CustomComponent,
+			fetchUrl: '/fetch/path',
+			fetch: true
+		});
+		var screen = new Router.defaultScreen(router);
+		screen.load('/path').then(() => {
+			assert.strictEqual('sentinel', router.lastLoadedState);
+			assert.strictEqual(1, RequestScreen.prototype.load.callCount);
+			assert.strictEqual('/fetch/path', RequestScreen.prototype.load.args[0][0]);
+			router.dispose();
+			stub.restore();
+			done();
+		});
+	});
+
+	it('should fetch data from url specified by "fetchUrl" function when "fetch" is true', function(done) {
+		var stub = sinon.stub(RequestScreen.prototype, 'load', function() {
+			return 'sentinel';
+		});
+		var router = new Router({
+			path: '/path',
+			component: CustomComponent,
+			fetchUrl: path => path + '.json',
+			fetch: true
+		});
+		var screen = new Router.defaultScreen(router);
+		screen.load('/path').then(() => {
+			assert.strictEqual('sentinel', router.lastLoadedState);
+			assert.strictEqual(1, RequestScreen.prototype.load.callCount);
+			assert.strictEqual('/path.json', RequestScreen.prototype.load.args[0][0]);
+			router.dispose();
+			stub.restore();
+			done();
+		});
+	});
+
 	it('should router set screen cacheability to true based on its cacheable state', function(done) {
 		var router = new Router({
 			path: '/path',

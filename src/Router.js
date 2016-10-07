@@ -153,6 +153,16 @@ Router.STATE = {
 	fetch: {
 		value: false
 	},
+	
+	/**
+	 * Url to be used when fetching data for this route. If nothing is given,
+	 * the current path will be used by default. Note that this is only relevant
+	 * if "fetch" is set to `true`.
+	 * @type {?string|function()}
+	 */
+	fetchUrl: {
+		validator: val => core.isString(val) || core.isFunction(val)
+	},
 
 	/**
 	 * The timeout in ms used by `Router.defaultScreen` in ajax requests for
@@ -292,6 +302,20 @@ class ComponentScreen extends RequestScreen {
 		Router.activeRouter = router;
 		router.isActive_ = true;
 	}
+	
+	/**
+	 * Gets the url that should be used to fetch data.
+	 * @param {string} path
+	 * @return {string}
+	 * @protected
+	 */
+	getFetchUrl_(path) {
+		let fetchPath = this.router.fetchUrl || path;
+		if (core.isFunction(fetchPath)) {
+			fetchPath = fetchPath(path);
+		}
+		return fetchPath;
+	}
 
 	/**
 	 * @inheritDoc
@@ -300,7 +324,7 @@ class ComponentScreen extends RequestScreen {
 		this.setCacheable(this.router.cacheable);
 		var deferred = CancellablePromise.resolve();
 		if (this.router.fetch) {
-			deferred = deferred.then(() => super.load(path));
+			deferred = deferred.then(() => super.load(this.getFetchUrl_(path)));
 		} else {
 			deferred = deferred.then(() => this.router.data(path));
 		}
