@@ -2,6 +2,7 @@
 
 import dom from 'metal-dom';
 import { utils } from 'senna';
+import Ajax from 'metal-ajax';
 import { Component, ComponentRegistry } from 'metal-component';
 import IncrementalDomRenderer from 'metal-incremental-dom';
 import RequestScreen from 'senna/src/screen/RequestScreen';
@@ -221,6 +222,32 @@ describe('Router', function() {
 			assert.strictEqual('/path.json', RequestScreen.prototype.load.args[0][0]);
 			router.dispose();
 			stub.restore();
+			done();
+		});
+	});
+
+	it('should not use fetch url as navigation url', function(done) {
+		sinon.stub(Ajax, 'request', function() {
+			return new Promise(function(resolve) {
+				resolve({
+					getResponseHeader: () => null,
+					status: 200
+				});
+			});
+		});
+		
+		var router = new Router({
+			path: '/path',
+			component: CustomComponent,
+			fetchUrl: '/fetchUrl',
+			fetch: true
+		});
+		
+		var screen = new Router.defaultScreen(router);
+		screen.load('/path').then(() => {
+			assert.notEqual('/fetchUrl', screen.beforeUpdateHistoryPath('/path'));
+			assert.equal('/path', screen.beforeUpdateHistoryPath('/path'));
+			router.dispose();
 			done();
 		});
 	});

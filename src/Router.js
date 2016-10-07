@@ -257,6 +257,16 @@ class ComponentScreen extends RequestScreen {
 		// the router.
 		this.timeout = router.fetchTimeout;
 	}
+	
+	/**
+	 * Returns the path that should be used to update navigation history. When
+	 * `fetchUrl` is given we should make sure that the original path is used
+	 * instead of the request one.
+	 * @param {string}
+	 */
+	beforeUpdateHistoryPath(path) {
+		return this.router.fetchUrl ? path : super.beforeUpdateHistoryPath(path);
+	}
 
 	/**
 	 * @inheritDoc
