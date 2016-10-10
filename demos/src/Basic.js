@@ -11,14 +11,15 @@ import './Image.soy';
 var Basic = {
 	run() {
 		Component.render(Router, {
+			element: '#main > div',
+			fetch: true,
+			fetchUrl: '/demos/data.json',
 			path: '/demos/basic',
-			component: Home,
-			data: {
-				title: 'Home'
-			}
+			component: Home
 		});
 
 		Component.render(Router, {
+			element: '#main > div',
 			path: '/demos/basic/home-page',
 			component: Home,
 			data: {
@@ -27,6 +28,7 @@ var Basic = {
 		});
 
 		Component.render(Router, {
+			element: '#main > div',
 			path: '/demos/basic/about/:name(\\w+)?',
 			component: About,
 			data: {
@@ -35,6 +37,7 @@ var Basic = {
 		});
 
 		Component.render(Router, {
+			element: '#main > div',
 			path: '/demos/basic/about-delayed',
 			component: About,
 			data: function() {

@@ -1,7 +1,6 @@
 'use strict';
 
 import dom from 'metal-dom';
-import { utils } from 'senna';
 import Ajax from 'metal-ajax';
 import { Component, ComponentRegistry } from 'metal-component';
 import IncrementalDomRenderer from 'metal-incremental-dom';
@@ -235,14 +234,14 @@ describe('Router', function() {
 				});
 			});
 		});
-		
+
 		var router = new Router({
 			path: '/path',
 			component: CustomComponent,
 			fetchUrl: '/fetchUrl',
 			fetch: true
 		});
-		
+
 		var screen = new Router.defaultScreen(router);
 		screen.load('/path').then(() => {
 			assert.notEqual('/fetchUrl', screen.beforeUpdateHistoryPath('/path'));
@@ -337,7 +336,7 @@ describe('Router', function() {
 			assert.strictEqual('foo', Router.activeState.foo);
 			assert.ok(Router.activeState.router);
 			assert.strictEqual('/path/123/abc', Router.activeState.router.currentUrl);
-			
+
 			var expectedParams = {
 				foo: '123',
 				bar: 'abc'
@@ -378,7 +377,7 @@ describe('Router', function() {
 		screen.isValidResponseStatusCode = function() {
 			return true;
 		};
-		
+
 		screen.load('/path').then(() => {
 			screen.flip();
 			router.once('stateSynced', function() {
@@ -390,18 +389,50 @@ describe('Router', function() {
 		});
 	});
 
-	it('should render component with right element when routing to path', function() {
-		sinon.stub(utils, 'getCurrentBrowserPath').returns('/current/path');
+	it('should render component with right element when routing to path', function(done) {
 		dom.append(document.body, '<div id="el"><div></div></div>');
 		var element = document.querySelector('#el > div');
 		var router = new Router({
 			element: '#el > div',
-			path: '/current/path',
+			path: '/path',
 			component: CustomComponent
 		});
-		utils.getCurrentBrowserPath.restore();
+		var screen = new Router.defaultScreen(router);
+		screen.isValidResponseStatusCode = function() {
+			return true;
+		};
+
+		screen.load('/path').then(() => {
+			screen.flip();
+			router.once('stateSynced', function() {
+				assert.strictEqual(element, router.element);
+				assert.equal('el', element.parentNode.id);
+				router.dispose();
+				done();
+			});
+		});
+	});
+
+	it('should not reset router element to initial value after reattached', function() {
+		dom.append(document.body, '<div id="el"><div></div></div>');
+		var element = document.querySelector('#el > div');
+		var router = new Router({
+			element: '#el > div',
+			path: '/path',
+			component: CustomComponent
+		});
+
 		assert.strictEqual(element, router.element);
 		assert.equal('el', element.parentNode.id);
+
+		router.detach();
+		const newElement = document.createElement('div');
+		router.element = newElement;
+
+		router.attach();
+		assert.equal(newElement, router.element);
+
+		router.dispose();
 	});
 
 	it('should render redirect component when routing to path that got redirected', function(done) {
@@ -546,6 +577,82 @@ describe('Router', function() {
 						assert.ok(Router.getActiveComponent() instanceof CustomComponent);
 						assert.ok(Router.getActiveComponent().wasRendered);
 						assert.ok(!Router.getActiveComponent().isDisposed());
+						router.dispose();
+						router2.dispose();
+						done();
+					});
+				});
+			});
+		});
+	});
+
+	it('should reuse element when routing to different component that received same element', function(done) {
+		dom.append(document.body, '<div id="el"><div></div></div>');
+		var element = document.querySelector('#el > div');
+		var router = new Router({
+			element,
+			path: '/path',
+			component: CustomComponent
+		});
+		var router2 = new Router({
+			element,
+			path: '/path2',
+			component: CustomComponent2
+		});
+
+		var screen2 = new Router.defaultScreen(router2);
+		screen2.load('/path').then(() => {
+			screen2.flip();
+			router2.once('stateSynced', function() {
+				assert.strictEqual(element, router2.element);
+				assert.equal('el', element.parentNode.id);
+
+				var screen = new Router.defaultScreen(router);
+				screen.load('/path').then(() => {
+					screen.flip();
+
+					router.once('stateSynced', function() {
+						assert.strictEqual(element, router.element);
+						assert.equal('el', element.parentNode.id);
+						router.dispose();
+						router2.dispose();
+						done();
+					});
+				});
+			});
+		});
+	});
+
+	it('should not reuse element when routing to different component that didn\'t receive same element', function(done) {
+		dom.append(document.body, '<div id="el"><div></div></div>');
+		var element = document.querySelector('#el > div');
+		var element2 = document.createElement('div');
+		var router = new Router({
+			element: element2,
+			path: '/path',
+			component: CustomComponent
+		});
+		var router2 = new Router({
+			element,
+			path: '/path2',
+			component: CustomComponent2
+		});
+
+		var screen2 = new Router.defaultScreen(router2);
+		screen2.load('/path').then(() => {
+			screen2.flip();
+			router2.once('stateSynced', function() {
+				assert.strictEqual(element, router2.element);
+				assert.equal('el', element.parentNode.id);
+
+				var screen = new Router.defaultScreen(router);
+				screen.load('/path').then(() => {
+					screen.flip();
+
+					router.once('stateSynced', function() {
+						assert.notEqual(element, router.element);
+						assert.strictEqual(element2, router.element);
+						assert.ok(!element.parentNode);
 						router.dispose();
 						router2.dispose();
 						done();

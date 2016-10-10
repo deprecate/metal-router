@@ -1,7 +1,7 @@
 'use strict';
 
 import { core, object } from 'metal';
-import { utils, App, RequestScreen, Route } from 'senna';
+import { App, RequestScreen, Route } from 'senna';
 import CancellablePromise from 'metal-promise';
 import { Component, ComponentRegistry } from 'metal-component';
 import IncrementalDomRenderer from 'metal-incremental-dom';
@@ -17,8 +17,16 @@ class Router extends Component {
 		this.route = new Route(this.path, () => new Router.defaultScreen(this));
 		this.route.router = this;
 		Router.router().addRoutes(this.route);
+
+		// Router is never active on the first render, since it needs to wait for
+		// any async data to load first. This code is to make sure it won't lose
+		// the reference to its `element` and cause it to be removed from the dom
+		// (which would be bad for progressive enhancement) due to not rendering
+		// anything. It will be set back in `attached`.
+		this.firstRenderElement =  this.element;
+		this.element = null;
 	}
-	
+
 	/**
 	 * Addsrouting data to the given state object.
 	 * @param {string} path
@@ -40,6 +48,15 @@ class Router extends Component {
 	/**
 	 * @inheritDoc
 	 */
+	attached() {
+		if (!this.wasRendered) {
+			this.element = this.firstRenderElement;
+		}
+	}
+
+	/**
+	 * @inheritDoc
+	 */
 	disposeInternal() {
 		Router.router().removeRoute(this.route);
 		super.disposeInternal();
@@ -51,16 +68,6 @@ class Router extends Component {
 	 */
 	static getActiveComponent() {
 		return Router.activeRouter ? Router.activeRouter.getRouteComponent() : null;
-	}
-	
-	/**
-	 * Gets the default value for the `isActive` state property.
-	 * @return {boolean}
-	 * @protected
-	 */
-	getDefIsActiveValue_() {
-		var currentPath = utils.getCurrentBrowserPath();
-		return Router.router().findRoute(currentPath) === this.route;
 	}
 
 	/**
@@ -76,24 +83,13 @@ class Router extends Component {
 	 */
 	render() {
 		if (this.isActive_) {
-			var state = Router.activeState;
-			if (!state && this.data) {
-				const path = utils.getCurrentBrowserPath();
-				state = this.data(path);
-				if (state.then) {
-					// Ignore promises for now. TODO: Handle this better.
-					state = {};
-				} else {
-					state = this.addRoutingData(path, state);
-				}
-			}
 			IncrementalDOM.elementVoid(
 				this.component,
 				null,
 				null,
 				'ref',
 				'comp',
-				...this.toArray_(state)
+				...this.toArray_(Router.activeState)
 			);
 		}
 	}
@@ -192,7 +188,7 @@ Router.STATE = {
 	fetch: {
 		value: false
 	},
-	
+
 	/**
 	 * Url to be used when fetching data for this route. If nothing is given,
 	 * the current path will be used by default. Note that this is only relevant
@@ -227,7 +223,7 @@ Router.STATE = {
 	 */
 	isActive_: {
 		internal: true,
-		valueFn: 'getDefIsActiveValue_'
+		value: false
 	},
 
 	/**
@@ -286,7 +282,7 @@ class ComponentScreen extends RequestScreen {
 		// the router.
 		this.timeout = router.fetchTimeout;
 	}
-	
+
 	/**
 	 * Returns the path that should be used to update navigation history. When
 	 * `fetchUrl` is given we should make sure that the original path is used
@@ -338,13 +334,19 @@ class ComponentScreen extends RequestScreen {
 				activeComponent.getRenderer().parent_ = router;
 				router.components.comp = activeComponent;
 				router.element = activeComponent.element;
+			} else if (activeRouter.firstRenderElement === router.firstRenderElement) {
+				// If the routers were attached to the same element when created, then
+				// they should reuse the same element when active, so we can guarantee
+				// that they will be positioned correctly.
+				router.element = activeRouter.element;
+				activeRouter.element = null;
 			}
 		}
 
 		Router.activeRouter = router;
 		router.isActive_ = true;
 	}
-	
+
 	/**
 	 * Gets the url that should be used to fetch data.
 	 * @param {string} path
