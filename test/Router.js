@@ -785,6 +785,26 @@ describe('Router', function() {
 			});
 		});
 	});
+
+	it('should clear active router and component when it\'s disposed', function(done) {
+		var router = new Router({
+			path: '/path',
+			component: CustomComponent
+		});
+		var screen = new Router.defaultScreen(router);
+		screen.load('/path').then(() => {
+			screen.flip();
+			router.once('stateSynced', function() {
+				assert.strictEqual(router, Router.activeRouter);
+				assert.ok(Router.getActiveComponent() instanceof CustomComponent);
+
+				router.dispose();
+				assert.ok(!Router.activeRouter);
+				assert.ok(!Router.getActiveComponent());
+				done();
+			});
+		});
+	});
 });
 
 class CustomComponent extends Component {

@@ -59,6 +59,9 @@ class Router extends Component {
 	 * @inheritDoc
 	 */
 	disposeInternal() {
+		if (Router.activeRouter === this) {
+			Router.activeRouter = null;
+		}
 		Router.router().removeRoute(this.route);
 		super.disposeInternal();
 	}
