@@ -312,6 +312,7 @@ describe('Router', function() {
 		screen.load('/path').then(() => {
 			screen.flip();
 			assert.notStrictEqual(data, Router.activeState);
+			assert.strictEqual(Router.activeState, Router.getActiveState());
 			assert.strictEqual('foo', Router.activeState.foo);
 			assert.ok(Router.activeState.router);
 			assert.strictEqual('/path', Router.activeState.router.currentUrl);

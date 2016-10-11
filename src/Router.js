@@ -72,6 +72,14 @@ class Router extends Component {
 	}
 
 	/**
+	 * Gets the state for the currently active component.
+	 * @return {Object}
+	 */
+	static getActiveState() {
+		return Router.activeState;
+	}
+
+	/**
 	 * Gets this router's component, if there is one.
 	 * @return {Component}
 	 */
