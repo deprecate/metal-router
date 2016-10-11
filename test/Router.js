@@ -368,6 +368,29 @@ describe('Router', function() {
 		});
 	});
 
+	it('should pass path and extracted params to data function', function(done) {
+		var data = sinon.stub();
+		var router = new Router({
+			data: data,
+			path: '/path/:foo(\\d+)/:bar',
+			component: CustomComponent
+		});
+		var screen = new Router.defaultScreen(router);
+		screen.load('/path/123/abc').then(() => {
+			screen.flip();
+			assert.equal(1, data.callCount);
+			assert.strictEqual('/path/123/abc', data.args[0][0]);
+
+			var expectedParams = {
+				foo: '123',
+				bar: 'abc'
+			};
+			assert.deepEqual(expectedParams, data.args[0][1]);
+			router.dispose();
+			done();
+		});
+	});
+
 	it('should render component when routing to path', function(done) {
 		var router = new Router({
 			path: '/path',

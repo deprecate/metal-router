@@ -35,10 +35,11 @@ class Router extends Component {
 	 */
 	addRoutingData(path, state) {
 		if (this.includeRoutingData) {
+			const params = this.lastExtractedParams || this.route.extractParams(path);
 			return object.mixin({}, state, {
 				router: {
 					currentUrl: path,
-					params: this.route.extractParams(path)
+					params
 				}
 			});
 		}
@@ -367,14 +368,17 @@ class ComponentScreen extends RequestScreen {
 	load(path) {
 		this.setCacheable(this.router.cacheable);
 		var deferred = CancellablePromise.resolve();
+		let params;
 		if (this.router.fetch) {
 			deferred = deferred.then(() => super.load(this.getFetchUrl_(path)));
 		} else {
-			deferred = deferred.then(() => this.router.data(path));
+			params = this.router.route.extractParams(path);
+			deferred = deferred.then(() => this.router.data(path, params));
 		}
 		return deferred.then((loadedState) => {
 			this.router.lastPath = path;
 			this.router.lastLoadedState = loadedState;
+			this.router.lastExtractedParams = params;
 			return loadedState;
 		});
 	}
