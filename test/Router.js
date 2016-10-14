@@ -11,6 +11,7 @@ describe('Router', function() {
 
 	beforeEach(function() {
 		Router.activeRouter = null;
+		Router.routerInstance = null;
 	});
 
 	it('should create singleton instance of router', function() {
@@ -321,13 +322,41 @@ describe('Router', function() {
 		});
 	});
 
-	it('should include extracted param data in the active state by default', function(done) {
+	it('should add extracted param data to the active state by default', function(done) {
 		var data = {
 			foo: 'foo'
 		};
 		var router = new Router({
 			data: data,
 			path: '/path/:foo(\\d+)/:bar',
+			component: CustomComponent
+		});
+		var screen = new Router.defaultScreen(router);
+		screen.load('/path/123/abc').then(() => {
+			screen.flip();
+			assert.notStrictEqual(data, Router.activeState);
+			assert.strictEqual('foo', Router.activeState.foo);
+			assert.ok(Router.activeState.router);
+			assert.strictEqual('/path/123/abc', Router.activeState.router.currentUrl);
+
+			var expectedParams = {
+				foo: '123',
+				bar: 'abc'
+			};
+			assert.deepEqual(expectedParams, Router.activeState.router.params);
+			router.dispose();
+			done();
+		});
+	});
+
+	it('should add extracted param data to the active state when setBasePath is used', function(done) {
+		var data = {
+			foo: 'foo'
+		};
+		Router.router().setBasePath('/path');
+		var router = new Router({
+			data: data,
+			path: '/:foo(\\d+)/:bar',
 			component: CustomComponent
 		});
 		var screen = new Router.defaultScreen(router);

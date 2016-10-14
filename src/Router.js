@@ -35,7 +35,7 @@ class Router extends Component {
 	 */
 	addRoutingData(path, state) {
 		if (this.includeRoutingData) {
-			const params = this.lastExtractedParams || this.route.extractParams(path);
+			const params = this.lastExtractedParams || this.extractParams(path);
 			return object.mixin({}, state, {
 				router: {
 					currentUrl: path,
@@ -64,6 +64,15 @@ class Router extends Component {
 		}
 		Router.router().removeRoute(this.route);
 		super.disposeInternal();
+	}
+
+	/**
+	 * Extracts any params present in the given path.
+	 * @param {string} path
+	 * @return {Object}
+	 */
+	extractParams(path) {
+		return Router.router().extractParams(this.route, path);
 	}
 
 	/**
@@ -383,7 +392,7 @@ class ComponentScreen extends RequestScreen {
 		if (this.router.fetch) {
 			deferred = deferred.then(() => super.load(this.getFetchUrl_(path)));
 		} else {
-			params = this.router.route.extractParams(path);
+			params = this.router.extractParams(path);
 			deferred = deferred.then(() => this.router.data(path, params));
 		}
 		return deferred.then((loadedState) => {
