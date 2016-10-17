@@ -2,7 +2,7 @@
 
 Routing solution to link URLs to Metal.js components using HTML5 History API.
 
-![](https://raw.githubusercontent.com/metal/metal-router/master/demos/basic/img/sample.gif)
+![](https://raw.githubusercontent.com/metal/metal-router/master/demos/img/sample.gif)
 
 ## Setup
 
