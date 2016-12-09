@@ -347,12 +347,15 @@ class ComponentScreen extends RequestScreen {
 				// This call is important, as otherwise the component will be disposed
 				// after `activeRouter` is updated, since the router won't render
 				// anything this time. We want to reuse it in another router though.
-				activeRouter.getRenderer().skipNextChildrenDisposal();
+				activeRouter.getRenderer().skipNextChildrenDisposal(activeRouter);
 				delete activeRouter.components.comp;
 				activeRouter.element = null;
 
-				activeComponent.getRenderer().owner_ = router;
-				activeComponent.getRenderer().parent_ = router;
+				// TODO: Change this to stop accessing this private data object. Need
+				// to allow `IncrementalDomRenderer` to reuse components in different
+				// owners somehow, but only when requested.
+				activeComponent.__METAL_IC_RENDERER_DATA__.owner = router;
+				activeComponent.__METAL_IC_RENDERER_DATA__.parent = router;
 				router.components.comp = activeComponent;
 				router.element = activeComponent.element;
 			} else if (activeRouter.firstRenderElement === router.firstRenderElement) {
