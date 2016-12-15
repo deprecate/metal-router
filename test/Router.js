@@ -11,6 +11,7 @@ const defaultScreen = Router.defaultScreen;
 
 describe('Router', function() {
 	let router;
+	let router2;
 
 	before(function() {
 		sinon.stub(console, 'log');
@@ -25,6 +26,9 @@ describe('Router', function() {
 		Router.defaultScreen = defaultScreen;
 		if (router) {
 			router.dispose();
+		}
+		if (router2) {
+			router2.dispose();
 		}
 	});
 
@@ -674,6 +678,85 @@ describe('Router', function() {
 			Router.router().navigate('/path').then(() => {
 				assert.ok(prevComponent.isDisposed());
 				assert.notStrictEqual(prevComponent, Router.getActiveComponent());
+				done();
+			});
+		});
+	});
+
+	it('should change router as usual if beforeDeactivateHandler returns nothing', function(done) {
+		router = new Router({
+			beforeDeactivateHandler: () => {},
+			path: '/path1',
+			component: CustomComponent
+		});
+
+		router2 = new Router({
+			path: '/path2',
+			component: CustomComponent2
+		});
+
+		Router.router().navigate('/path1').then(() => {
+			assert.ok(Router.getActiveComponent() instanceof CustomComponent);
+			assert.equal('/path1', window.location.pathname);
+
+			Router.router().navigate('/path2').then(() => {
+				assert.ok(Router.getActiveComponent() instanceof CustomComponent2);
+				assert.equal('/path2', window.location.pathname);
+				done();
+			});
+		});
+	});
+
+	it('should not change router if beforeDeactivateHandler returns "true"', function(done) {
+		router = new Router({
+			beforeDeactivateHandler: () => true,
+			path: '/path1',
+			component: CustomComponent
+		});
+
+		router2 = new Router({
+			path: '/path2',
+			component: CustomComponent2
+		});
+
+		Router.router().navigate('/path1').then(() => {
+			assert.ok(Router.getActiveComponent() instanceof CustomComponent);
+			assert.equal('/path1', window.location.pathname);
+
+			Router.router().navigate('/path2').catch(() => {
+				assert.ok(Router.getActiveComponent() instanceof CustomComponent);
+				assert.equal('/path1', window.location.pathname);
+				done();
+			});
+		});
+	});
+
+	it('should not change router if beforeDeactivateHandler given by name returns "true"', function(done) {
+		class TestComponent extends CustomComponent {
+			handleDeactivate() {
+				return true;
+			}
+		}
+
+		router = new Router({
+			beforeDeactivateHandler: 'handleDeactivate',
+			path: '/path1',
+			component: TestComponent
+		});
+
+		router2 = new Router({
+			path: '/path2',
+			component: CustomComponent
+		});
+
+		Router.router().navigate('/path1').then(() => {
+			assert.ok(Router.getActiveComponent() instanceof TestComponent);
+			assert.equal('/path1', window.location.pathname);
+
+			Router.router().navigate('/path2').catch(() => {
+				assert.ok(Router.getActiveComponent() instanceof TestComponent);
+				assert.notEqual('/path2', window.location.pathname);
+				assert.equal('/path1', window.location.pathname);
 				done();
 			});
 		});

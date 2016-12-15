@@ -192,6 +192,16 @@ Router.RENDERER = IncrementalDomRenderer;
  */
 Router.STATE = {
 	/**
+	 * Handler to be called before a router is deactivated. Can be given as a
+	 * function reference directly, or as the name of a function to be called in
+	 * the router's component instance.
+	 * @type {!function()|string}
+	 */
+	beforeDeactivateHandler: {
+		validator: val => core.isString(val) || core.isFunction(val)
+	},
+
+	/**
 	 * If set to true navigation will cache component state deferred results.
 	 * @type {boolean}
 	 * @default true
@@ -318,6 +328,25 @@ class ComponentScreen extends RequestScreen {
 		// Sets the timeout used by `RequestScreen` to be the one specified by
 		// the router.
 		this.timeout = router.fetchTimeout;
+	}
+
+	/**
+	 * Calls the handler specified by the router's `beforeDeactivateHandler`
+	 * state property.
+	 * @return {?boolean}
+	 */
+	beforeDeactivate() {
+		const handler = this.router.beforeDeactivateHandler;
+		if (handler) {
+			if (core.isString(handler)) {
+				const comp = this.router.getRouteComponent();
+				if (comp && core.isFunction(comp[handler])) {
+					return comp[handler]();
+				}
+			} else {
+				return handler();
+			}
+		}
 	}
 
 	/**
