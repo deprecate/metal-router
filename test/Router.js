@@ -7,31 +7,48 @@ import IncrementalDomRenderer from 'metal-incremental-dom';
 import RequestScreen from 'senna/src/screen/RequestScreen';
 import Router from '../src/Router';
 
-describe('Router', function() {
+const defaultScreen = Router.defaultScreen;
 
-	beforeEach(function() {
+describe('Router', function() {
+	let router;
+
+	before(function() {
+		sinon.stub(console, 'log');
+	});
+
+	afterEach(function() {
+		if (Router.routerInstance) {
+			Router.routerInstance.dispose();
+			Router.routerInstance = null;
+		}
 		Router.activeRouter = null;
-		Router.routerInstance = null;
+		Router.defaultScreen = defaultScreen;
+		if (router) {
+			router.dispose();
+		}
+	});
+
+	after(function() {
+		console.log.restore();
 	});
 
 	it('should create singleton instance of router', function() {
-		var router = Router.router();
+		router = Router.router();
 		assert.ok(router);
 		assert.strictEqual(router, Router.router());
 	});
 
 	it('should add route to router from constructor', function() {
 		assert.ok(!Router.router().hasRoutes());
-		var router = new Router({
+		router = new Router({
 			path: '/path',
 			component: CustomComponent
 		});
 		assert.ok(Router.router().hasRoutes());
-		router.dispose();
 	});
 
 	it('should remove route from router from disposed router', function() {
-		var router = new Router({
+		router = new Router({
 			path: '/path',
 			component: CustomComponent
 		});
@@ -41,7 +58,7 @@ describe('Router', function() {
 	});
 
 	it('should return "Router.defaultScreen" instance from route handler', function() {
-		var router = new Router({
+		router = new Router({
 			path: '/path',
 			component: CustomComponent
 		});
@@ -54,47 +71,43 @@ describe('Router', function() {
 	});
 
 	it('should create component instance from constructor name', function() {
-		var router = new Router({
+		router = new Router({
 			path: '/path',
 			component: 'CustomComponent',
 			isActive_: true
 		});
 		var child = router.components.comp;
 		assert.ok(child instanceof CustomComponent);
-		router.dispose();
 	});
 
 	it('should create component instance from constructor function', function() {
-		var router = new Router({
+		router = new Router({
 			path: '/path',
 			component: CustomComponent,
 			isActive_: true
 		});
 		var child = router.components.comp;
 		assert.ok(child instanceof CustomComponent);
-		router.dispose();
 	});
 
 	it('should router accept data as function', function() {
 		var data = sinon.stub();
-		var router = new Router({
+		router = new Router({
 			data: data,
 			path: '/path',
 			component: CustomComponent
 		});
 		assert.strictEqual(data, router.data);
-		router.dispose();
 	});
 
 	it('should router wrap data object or deferred in a function', function() {
 		var data = new Promise(function() {});
-		var router = new Router({
+		router = new Router({
 			data: data,
 			path: '/path',
 			component: CustomComponent
 		});
 		assert.strictEqual(data, router.data());
-		router.dispose();
 	});
 
 	it('should throw error when ComponentScreen router not specified', function() {
@@ -105,17 +118,16 @@ describe('Router', function() {
 
 	it('should not throw error when ComponentScreen router specified', function() {
 		assert.doesNotThrow(function() {
-			var router = new Router({
+			router = new Router({
 				path: '/path',
 				component: CustomComponent
 			});
 			new Router.defaultScreen(router);
-			router.dispose();
 		});
 	});
 
 	it('should set screen timeout to value specified by router', function() {
-		var router = new Router({
+		router = new Router({
 			path: '/path',
 			component: CustomComponent,
 			fetchTimeout: 100
@@ -125,7 +137,7 @@ describe('Router', function() {
 	});
 
 	it('should set screen timeout to null if specified by router', function() {
-		var router = new Router({
+		router = new Router({
 			path: '/path',
 			component: CustomComponent,
 			fetchTimeout: null
@@ -135,7 +147,7 @@ describe('Router', function() {
 	});
 
 	it('should not change screen timeout if value specified by router is invalid', function() {
-		var router = new Router({
+		router = new Router({
 			path: '/path',
 			component: CustomComponent,
 			fetchTimeout: 'foo'
@@ -148,16 +160,14 @@ describe('Router', function() {
 		var stub = sinon.stub(RequestScreen.prototype, 'load', function() {
 			return 'sentinel';
 		});
-		var router = new Router({
+		router = new Router({
 			path: '/path',
 			component: CustomComponent,
 			fetch: true
 		});
-		var screen = new Router.defaultScreen(router);
-		screen.load('/path').then(() => {
+		Router.router().navigate('/path').then(() => {
 			assert.strictEqual('sentinel', router.lastLoadedState);
 			assert.strictEqual(1, RequestScreen.prototype.load.callCount);
-			router.dispose();
 			stub.restore();
 			done();
 		});
@@ -167,18 +177,14 @@ describe('Router', function() {
 		var stub = sinon.stub(RequestScreen.prototype, 'load', function() {
 			return '{"sentinel":true}';
 		});
-		var router = new Router({
+		router = new Router({
 			path: '/path',
 			component: CustomComponent,
 			fetch: true
 		});
-		var screen = new Router.defaultScreen(router);
-		screen.load('/path').then(() => {
-			assert.deepEqual({
-				sentinel: true
-			}, screen.maybeParseLastLoadedStateAsJson());
+		Router.router().navigate('/path').then(() => {
+			assert.equal(true, Router.activeState.sentinel);
 			assert.strictEqual(1, RequestScreen.prototype.load.callCount);
-			router.dispose();
 			stub.restore();
 			done();
 		});
@@ -188,18 +194,16 @@ describe('Router', function() {
 		var stub = sinon.stub(RequestScreen.prototype, 'load', function() {
 			return 'sentinel';
 		});
-		var router = new Router({
+		router = new Router({
 			path: '/path',
 			component: CustomComponent,
 			fetchUrl: '/fetch/path',
 			fetch: true
 		});
-		var screen = new Router.defaultScreen(router);
-		screen.load('/path').then(() => {
+		Router.router().navigate('/path').then(() => {
 			assert.strictEqual('sentinel', router.lastLoadedState);
 			assert.strictEqual(1, RequestScreen.prototype.load.callCount);
 			assert.strictEqual('/fetch/path', RequestScreen.prototype.load.args[0][0]);
-			router.dispose();
 			stub.restore();
 			done();
 		});
@@ -209,18 +213,16 @@ describe('Router', function() {
 		var stub = sinon.stub(RequestScreen.prototype, 'load', function() {
 			return 'sentinel';
 		});
-		var router = new Router({
+		router = new Router({
 			path: '/path',
 			component: CustomComponent,
 			fetchUrl: path => path + '.json',
 			fetch: true
 		});
-		var screen = new Router.defaultScreen(router);
-		screen.load('/path').then(() => {
+		Router.router().navigate('/path').then(() => {
 			assert.strictEqual('sentinel', router.lastLoadedState);
 			assert.strictEqual(1, RequestScreen.prototype.load.callCount);
 			assert.strictEqual('/path.json', RequestScreen.prototype.load.args[0][0]);
-			router.dispose();
 			stub.restore();
 			done();
 		});
@@ -236,66 +238,52 @@ describe('Router', function() {
 			});
 		});
 
-		var router = new Router({
+		router = new Router({
 			path: '/path',
 			component: CustomComponent,
 			fetchUrl: '/fetchUrl',
 			fetch: true
 		});
 
-		var screen = new Router.defaultScreen(router);
-		screen.load('/path').then(() => {
-			assert.notEqual('/fetchUrl', screen.beforeUpdateHistoryPath('/path'));
-			assert.equal('/path', screen.beforeUpdateHistoryPath('/path'));
-			router.dispose();
+		Router.router().navigate('/path').then(() => {
+			assert.notEqual('/fetchUrl', window.location.pathname);
+			assert.equal('/path', window.location.pathname);
 			done();
 		});
 	});
 
 	it('should router set screen cacheability to true based on its cacheable state', function(done) {
-		var router = new Router({
+		router = new Router({
 			path: '/path',
 			component: CustomComponent,
 			cacheable: true
 		});
-		var screen = new Router.defaultScreen(router);
-		screen.isValidResponseStatusCode = function() {
-			return true;
-		};
-		screen.load('/path').then(() => {
-			assert.ok(screen.isCacheable());
-			router.dispose();
+		Router.router().navigate('/path').then(() => {
+			assert.ok(router.getScreen().isCacheable());
 			done();
 		});
 	});
 
 	it('should router set screen cacheability to false based on its cacheable state', function(done) {
-		var router = new Router({
+		router = new Router({
 			path: '/path',
 			component: CustomComponent,
 			cacheable: false
 		});
-		var screen = new Router.defaultScreen(router);
-		screen.isValidResponseStatusCode = function() {
-			return true;
-		};
-		screen.load('/path').then(() => {
-			assert.ok(!screen.isCacheable());
-			router.dispose();
+		Router.router().navigate('/path').then(() => {
+			assert.ok(!router.getScreen().isCacheable());
 			done();
 		});
 	});
 
 	it('should load router data and store as router lastLoadedState', function(done) {
-		var router = new Router({
+		router = new Router({
 			data: 'sentinel',
 			path: '/path',
 			component: CustomComponent
 		});
-		var screen = new Router.defaultScreen(router);
-		screen.load('/path').then(() => {
+		Router.router().navigate('/path').then(() => {
 			assert.strictEqual('sentinel', router.lastLoadedState);
-			router.dispose();
 			done();
 		});
 	});
@@ -304,20 +292,17 @@ describe('Router', function() {
 		var data = {
 			foo: 'foo'
 		};
-		var router = new Router({
+		router = new Router({
 			data: data,
 			path: '/path',
 			component: CustomComponent
 		});
-		var screen = new Router.defaultScreen(router);
-		screen.load('/path').then(() => {
-			screen.flip();
+		Router.router().navigate('/path').then(() => {
 			assert.notStrictEqual(data, Router.activeState);
 			assert.strictEqual(Router.activeState, Router.getActiveState());
 			assert.strictEqual('foo', Router.activeState.foo);
 			assert.ok(Router.activeState.router);
 			assert.strictEqual('/path', Router.activeState.router.currentUrl);
-			router.dispose();
 			done();
 		});
 	});
@@ -326,14 +311,12 @@ describe('Router', function() {
 		var data = {
 			foo: 'foo'
 		};
-		var router = new Router({
+		router = new Router({
 			data: data,
 			path: '/path/:foo(\\d+)/:bar',
 			component: CustomComponent
 		});
-		var screen = new Router.defaultScreen(router);
-		screen.load('/path/123/abc').then(() => {
-			screen.flip();
+		Router.router().navigate('/path/123/abc').then(() => {
 			assert.notStrictEqual(data, Router.activeState);
 			assert.strictEqual('foo', Router.activeState.foo);
 			assert.ok(Router.activeState.router);
@@ -344,7 +327,6 @@ describe('Router', function() {
 				bar: 'abc'
 			};
 			assert.deepEqual(expectedParams, Router.activeState.router.params);
-			router.dispose();
 			done();
 		});
 	});
@@ -354,14 +336,12 @@ describe('Router', function() {
 			foo: 'foo'
 		};
 		Router.router().setBasePath('/path');
-		var router = new Router({
+		router = new Router({
 			data: data,
 			path: '/:foo(\\d+)/:bar',
 			component: CustomComponent
 		});
-		var screen = new Router.defaultScreen(router);
-		screen.load('/path/123/abc').then(() => {
-			screen.flip();
+		Router.router().navigate('/path/123/abc').then(() => {
 			assert.notStrictEqual(data, Router.activeState);
 			assert.strictEqual('foo', Router.activeState.foo);
 			assert.ok(Router.activeState.router);
@@ -372,7 +352,6 @@ describe('Router', function() {
 				bar: 'abc'
 			};
 			assert.deepEqual(expectedParams, Router.activeState.router.params);
-			router.dispose();
 			done();
 		});
 	});
@@ -381,33 +360,28 @@ describe('Router', function() {
 		var data = {
 			foo: 'foo'
 		};
-		var router = new Router({
+		router = new Router({
 			data: data,
 			path: '/path',
 			component: CustomComponent,
 			includeRoutingData: false
 		});
-		var screen = new Router.defaultScreen(router);
-		screen.load('/path').then(() => {
-			screen.flip();
+		Router.router().navigate('/path').then(() => {
 			assert.strictEqual(data, Router.activeState);
 			assert.strictEqual('foo', Router.activeState.foo);
 			assert.ok(!Router.activeState.router);
-			router.dispose();
 			done();
 		});
 	});
 
 	it('should pass path and extracted params to data function', function(done) {
 		var data = sinon.stub();
-		var router = new Router({
+		router = new Router({
 			data: data,
 			path: '/path/:foo(\\d+)/:bar',
 			component: CustomComponent
 		});
-		var screen = new Router.defaultScreen(router);
-		screen.load('/path/123/abc').then(() => {
-			screen.flip();
+		Router.router().navigate('/path/123/abc').then(() => {
 			assert.equal(1, data.callCount);
 			assert.strictEqual('/path/123/abc', data.args[0][0]);
 
@@ -416,60 +390,43 @@ describe('Router', function() {
 				bar: 'abc'
 			};
 			assert.deepEqual(expectedParams, data.args[0][1]);
-			router.dispose();
 			done();
 		});
 	});
 
 	it('should render component when routing to path', function(done) {
-		var router = new Router({
+		router = new Router({
 			path: '/path',
 			component: CustomComponent
 		});
-		var screen = new Router.defaultScreen(router);
-		screen.isValidResponseStatusCode = function() {
-			return true;
-		};
 
-		screen.load('/path').then(() => {
-			screen.flip();
-			router.once('stateSynced', function() {
-				assert.ok(Router.getActiveComponent() instanceof CustomComponent);
-				assert.ok(Router.getActiveComponent().wasRendered);
-				router.dispose();
-				done();
-			});
+		Router.router().navigate('/path').then(() => {
+			assert.ok(Router.getActiveComponent() instanceof CustomComponent);
+			assert.ok(Router.getActiveComponent().wasRendered);
+			done();
 		});
 	});
 
 	it('should render component with right element when routing to path', function(done) {
 		dom.append(document.body, '<div id="el"><div></div></div>');
 		var element = document.querySelector('#el > div');
-		var router = new Router({
+		router = new Router({
 			element: '#el > div',
 			path: '/path',
 			component: CustomComponent
 		});
-		var screen = new Router.defaultScreen(router);
-		screen.isValidResponseStatusCode = function() {
-			return true;
-		};
 
-		screen.load('/path').then(() => {
-			screen.flip();
-			router.once('stateSynced', function() {
-				assert.strictEqual(element, router.element);
-				assert.equal('el', element.parentNode.id);
-				router.dispose();
-				done();
-			});
+		Router.router().navigate('/path').then(() => {
+			assert.strictEqual(element, router.element);
+			assert.equal('el', element.parentNode.id);
+			done();
 		});
 	});
 
 	it('should not reset router element to initial value after reattached', function() {
 		dom.append(document.body, '<div id="el"><div></div></div>');
 		var element = document.querySelector('#el > div');
-		var router = new Router({
+		router = new Router({
 			element: '#el > div',
 			path: '/path',
 			component: CustomComponent
@@ -484,12 +441,17 @@ describe('Router', function() {
 
 		router.attach();
 		assert.equal(newElement, router.element);
-
-		router.dispose();
 	});
 
 	it('should render redirect component when routing to path that got redirected', function(done) {
-		var router = new Router({
+		class TestScreen extends Router.defaultScreen {
+			beforeUpdateHistoryPath() {
+				return '/redirect';
+			}
+		}
+		Router.defaultScreen = TestScreen;
+
+		router = new Router({
 			path: '/path',
 			component: CustomComponent
 		});
@@ -497,114 +459,84 @@ describe('Router', function() {
 			path: '/redirect',
 			component: RedirectComponent
 		});
-		var screen = new Router.defaultScreen(router);
-		screen.isValidResponseStatusCode = function() {
-			return true;
-		};
-		screen.beforeUpdateHistoryPath = function() {
-			return '/redirect';
-		};
-		screen.load('/path').then(() => {
-			screen.flip();
-			redirectRouter.once('stateSynced', function() {
-				assert.ok(Router.getActiveComponent() instanceof RedirectComponent);
-				assert.ok(Router.getActiveComponent().wasRendered);
-				router.dispose();
-				redirectRouter.dispose();
-				done();
-			});
+		Router.router().navigate('/path').then(() => {
+			assert.ok(Router.getActiveComponent() instanceof RedirectComponent);
+			assert.ok(Router.getActiveComponent().wasRendered);
+			redirectRouter.dispose();
+			done();
 		});
 	});
 
 	it('should render original component when routing to path that got redirected without match route', function(done) {
-		var router = new Router({
+		class TestScreen extends Router.defaultScreen {
+			beforeUpdateHistoryPath() {
+				return '/redirect';
+			}
+		}
+		Router.defaultScreen = TestScreen;
+
+		router = new Router({
 			path: '/path',
 			component: CustomComponent
 		});
-		var screen = new Router.defaultScreen(router);
-		screen.isValidResponseStatusCode = function() {
-			return true;
-		};
-		screen.beforeUpdateHistoryPath = function() {
-			return '/redirect';
-		};
-		screen.load('/path').then(() => {
-			screen.flip();
-			router.once('stateSynced', function() {
-				assert.ok(Router.getActiveComponent() instanceof CustomComponent);
-				assert.ok(Router.getActiveComponent().wasRendered);
-				router.dispose();
-				done();
-			});
+		Router.router().navigate('/path').then(() => {
+			assert.ok(Router.getActiveComponent() instanceof CustomComponent);
+			assert.ok(Router.getActiveComponent().wasRendered);
+			done();
 		});
 	});
 
 	it('should render component as the router element', function(done) {
-		var router = new Router({
+		router = new Router({
 			path: '/path',
 			component: CustomComponent
 		});
-		var screen = new Router.defaultScreen(router);
-		screen.load('/path').then(() => {
-			screen.flip();
-			router.once('stateSynced', function() {
-				var comp = router.components.comp;
-				assert.strictEqual(comp.element, router.element);
-				router.dispose();
-				done();
-			});
+		Router.router().navigate('/path').then(() => {
+			var comp = router.components.comp;
+			assert.strictEqual(comp.element, router.element);
+			done();
 		});
 	});
 
 	it('should rerender if component constructor changes', function(done) {
-		var router = new Router({
+		router = new Router({
 			path: '/path',
 			component: CustomComponent
 		});
-		var screen = new Router.defaultScreen(router);
-		screen.load('/path').then(() => {
-			screen.flip();
-			router.once('stateSynced', function() {
-				var listener = sinon.stub();
-				router.on('rendered', listener);
+		Router.router().navigate('/path').then(() => {
+			var listener = sinon.stub();
+			router.on('rendered', listener);
 
-				var comp = router.getRouteComponent();
-				router.component = CustomComponent2;
-				router.once('stateSynced', function() {
-					assert.strictEqual(1, listener.callCount);
-					assert.notStrictEqual(comp, router.getRouteComponent());
-					assert.ok(router.getRouteComponent() instanceof CustomComponent2);
-					router.dispose();
-					done();
-				});
+			var comp = router.getRouteComponent();
+			router.component = CustomComponent2;
+			router.once('stateSynced', function() {
+				assert.strictEqual(1, listener.callCount);
+				assert.notStrictEqual(comp, router.getRouteComponent());
+				assert.ok(router.getRouteComponent() instanceof CustomComponent2);
+				done();
 			});
 		});
 	});
 
 	it('should not rerender if any state property other than "component" or "isActive_" changes', function(done) {
-		var router = new Router({
+		router = new Router({
 			path: '/path',
 			component: CustomComponent
 		});
-		var screen = new Router.defaultScreen(router);
-		screen.load('/path').then(() => {
-			screen.flip();
-			router.once('stateSynced', function() {
-				var listener = sinon.stub();
-				router.on('rendered', listener);
-				router.fetch = true;
+		Router.router().navigate('/path').then(() => {
+			var listener = sinon.stub();
+			router.on('rendered', listener);
+			router.fetch = true;
 
-				router.once('stateSynced', function() {
-					assert.strictEqual(0, listener.callCount);
-					router.dispose();
-					done();
-				});
+			router.once('stateSynced', function() {
+				assert.strictEqual(0, listener.callCount);
+				done();
 			});
 		});
 	});
 
 	it('should dispose then render component when routing to new component path', function(done) {
-		var router = new Router({
+		router = new Router({
 			path: '/path',
 			component: CustomComponent
 		});
@@ -613,28 +545,17 @@ describe('Router', function() {
 			component: CustomComponent2
 		});
 
-		var screen2 = new Router.defaultScreen(router2);
-		screen2.load('/path').then(() => {
-			screen2.flip();
-			router2.once('stateSynced', function() {
-				var prevComponent = router2.getRouteComponent();
-				assert.strictEqual(prevComponent.element, router2.element);
+		Router.router().navigate('/path2').then(() => {
+			var prevComponent = router2.getRouteComponent();
+			assert.strictEqual(prevComponent.element, router2.element);
 
-				var screen = new Router.defaultScreen(router);
-				screen.load('/path').then(() => {
-					screen.flip();
-
-					router.once('stateSynced', function() {
-						assert.ok(!router2.element);
-						assert.ok(prevComponent.isDisposed());
-						assert.ok(Router.getActiveComponent() instanceof CustomComponent);
-						assert.ok(Router.getActiveComponent().wasRendered);
-						assert.ok(!Router.getActiveComponent().isDisposed());
-						router.dispose();
-						router2.dispose();
-						done();
-					});
-				});
+			Router.router().navigate('/path').then(() => {
+				assert.ok(!router2.element);
+				assert.ok(prevComponent.isDisposed());
+				assert.ok(Router.getActiveComponent() instanceof CustomComponent);
+				assert.ok(Router.getActiveComponent().wasRendered);
+				assert.ok(!Router.getActiveComponent().isDisposed());
+				done();
 			});
 		});
 	});
@@ -642,7 +563,7 @@ describe('Router', function() {
 	it('should reuse element when routing to different component that received same element', function(done) {
 		dom.append(document.body, '<div id="el"><div></div></div>');
 		var element = document.querySelector('#el > div');
-		var router = new Router({
+		router = new Router({
 			element,
 			path: '/path',
 			component: CustomComponent
@@ -653,25 +574,14 @@ describe('Router', function() {
 			component: CustomComponent2
 		});
 
-		var screen2 = new Router.defaultScreen(router2);
-		screen2.load('/path').then(() => {
-			screen2.flip();
-			router2.once('stateSynced', function() {
-				assert.strictEqual(element, router2.element);
+		Router.router().navigate('/path2').then(() => {
+			assert.strictEqual(element, router2.element);
+			assert.equal('el', element.parentNode.id);
+
+			Router.router().navigate('/path').then(() => {
+				assert.strictEqual(element, router.element);
 				assert.equal('el', element.parentNode.id);
-
-				var screen = new Router.defaultScreen(router);
-				screen.load('/path').then(() => {
-					screen.flip();
-
-					router.once('stateSynced', function() {
-						assert.strictEqual(element, router.element);
-						assert.equal('el', element.parentNode.id);
-						router.dispose();
-						router2.dispose();
-						done();
-					});
-				});
+				done();
 			});
 		});
 	});
@@ -680,7 +590,7 @@ describe('Router', function() {
 		dom.append(document.body, '<div id="el"><div></div></div>');
 		var element = document.querySelector('#el > div');
 		var element2 = document.createElement('div');
-		var router = new Router({
+		router = new Router({
 			element: element2,
 			path: '/path',
 			component: CustomComponent
@@ -691,32 +601,21 @@ describe('Router', function() {
 			component: CustomComponent2
 		});
 
-		var screen2 = new Router.defaultScreen(router2);
-		screen2.load('/path').then(() => {
-			screen2.flip();
-			router2.once('stateSynced', function() {
-				assert.strictEqual(element, router2.element);
-				assert.equal('el', element.parentNode.id);
+		Router.router().navigate('/path2').then(() => {
+			assert.strictEqual(element, router2.element);
+			assert.equal('el', element.parentNode.id);
 
-				var screen = new Router.defaultScreen(router);
-				screen.load('/path').then(() => {
-					screen.flip();
-
-					router.once('stateSynced', function() {
-						assert.notEqual(element, router.element);
-						assert.strictEqual(element2, router.element);
-						assert.ok(!element.parentNode);
-						router.dispose();
-						router2.dispose();
-						done();
-					});
-				});
+			Router.router().navigate('/path').then(() => {
+				assert.notEqual(element, router.element);
+				assert.strictEqual(element2, router.element);
+				assert.ok(!element.parentNode);
+				done();
 			});
 		});
 	});
 
 	it('should reuse component when routing to path that uses same constructor', function(done) {
-		var router = new Router({
+		router = new Router({
 			path: '/path',
 			component: CustomComponent
 		});
@@ -725,32 +624,20 @@ describe('Router', function() {
 			component: CustomComponent
 		});
 
-		var screen2 = new Router.defaultScreen(router2);
-		screen2.load('/path').then(() => {
-			screen2.flip();
-			router2.once('stateSynced', function() {
-				var prevComponent = router2.getRouteComponent();
-				sinon.spy(prevComponent, 'dispose');
+		Router.router().navigate('/path2').then(() => {
+			var prevComponent = router2.getRouteComponent();
+			sinon.spy(prevComponent, 'dispose');
 
-				var screen = new Router.defaultScreen(router);
-				screen.load('/path').then(() => {
-					screen.flip();
-					assert.strictEqual(0, prevComponent.dispose.callCount);
-
-					router.once('stateSynced', function() {
-						assert.strictEqual(0, prevComponent.dispose.callCount);
-						assert.strictEqual(prevComponent, Router.getActiveComponent());
-						router.dispose();
-						router2.dispose();
-						done();
-					});
-				});
+			Router.router().navigate('/path').then(() => {
+				assert.strictEqual(0, prevComponent.dispose.callCount);
+				assert.strictEqual(prevComponent, Router.getActiveComponent());
+				done();
 			});
 		});
 	});
 
 	it('should reuse component when routing to path that uses same constructor name', function(done) {
-		var router = new Router({
+		router = new Router({
 			path: '/path',
 			component: 'CustomComponent'
 		});
@@ -759,32 +646,20 @@ describe('Router', function() {
 			component: CustomComponent
 		});
 
-		var screen2 = new Router.defaultScreen(router2);
-		screen2.load('/path').then(() => {
-			screen2.flip();
-			router2.once('stateSynced', function() {
-				var prevComponent = router2.getRouteComponent();
-				sinon.spy(prevComponent, 'dispose');
+		Router.router().navigate('/path2').then(() => {
+			var prevComponent = router2.getRouteComponent();
+			sinon.spy(prevComponent, 'dispose');
 
-				var screen = new Router.defaultScreen(router);
-				screen.load('/path').then(() => {
-					screen.flip();
-					assert.strictEqual(0, prevComponent.dispose.callCount);
-
-					router.once('stateSynced', function() {
-					assert.strictEqual(0, prevComponent.dispose.callCount);
-						assert.strictEqual(prevComponent, Router.getActiveComponent());
-						router.dispose();
-						router2.dispose();
-						done();
-					});
-				});
+			Router.router().navigate('/path').then(() => {
+				assert.strictEqual(0, prevComponent.dispose.callCount);
+				assert.strictEqual(prevComponent, Router.getActiveComponent());
+				done();
 			});
 		});
 	});
 
 	it('should not reuse active component when routing to same component path if reuseActiveComponent is false', function(done) {
-		var router = new Router({
+		router = new Router({
 			path: '/path',
 			component: CustomComponent,
 			reuseActiveComponent: false
@@ -794,44 +669,29 @@ describe('Router', function() {
 			component: CustomComponent
 		});
 
-		var screen2 = new Router.defaultScreen(router2);
-		screen2.load('/path').then(() => {
-			screen2.flip();
-			router2.once('stateSynced', function() {
-				var prevComponent = router2.getRouteComponent();
-				var screen = new Router.defaultScreen(router);
-				screen.load('/path').then(() => {
-					screen.flip();
-
-					router.once('stateSynced', function() {
-						assert.ok(prevComponent.isDisposed());
-						assert.notStrictEqual(prevComponent, Router.getActiveComponent());
-						router.dispose();
-						router2.dispose();
-						done();
-					});
-				});
+		Router.router().navigate('/path2').then(() => {
+			var prevComponent = router2.getRouteComponent();
+			Router.router().navigate('/path').then(() => {
+				assert.ok(prevComponent.isDisposed());
+				assert.notStrictEqual(prevComponent, Router.getActiveComponent());
+				done();
 			});
 		});
 	});
 
 	it('should clear active router and component when it\'s disposed', function(done) {
-		var router = new Router({
+		router = new Router({
 			path: '/path',
 			component: CustomComponent
 		});
-		var screen = new Router.defaultScreen(router);
-		screen.load('/path').then(() => {
-			screen.flip();
-			router.once('stateSynced', function() {
-				assert.strictEqual(router, Router.activeRouter);
-				assert.ok(Router.getActiveComponent() instanceof CustomComponent);
+		Router.router().navigate('/path').then(() => {
+			assert.strictEqual(router, Router.activeRouter);
+			assert.ok(Router.getActiveComponent() instanceof CustomComponent);
 
-				router.dispose();
-				assert.ok(!Router.activeRouter);
-				assert.ok(!Router.getActiveComponent());
-				done();
-			});
+			router.dispose();
+			assert.ok(!Router.activeRouter);
+			assert.ok(!Router.getActiveComponent());
+			done();
 		});
 	});
 });

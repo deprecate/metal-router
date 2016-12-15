@@ -14,7 +14,7 @@ class Router extends Component {
 	 * @inheritDoc
 	 */
 	created() {
-		this.route = new Route(this.path, () => new Router.defaultScreen(this));
+		this.route = new Route(this.path, this.createScreen_.bind(this));
 		this.route.router = this;
 		Router.router().addRoutes(this.route);
 
@@ -53,6 +53,15 @@ class Router extends Component {
 		if (!this.wasRendered) {
 			this.element = this.firstRenderElement;
 		}
+	}
+
+	/**
+	 * Creates the screen to be used by this router.
+	 * @protected
+	 */
+	createScreen_() {
+		this.screen_ = new Router.defaultScreen(this);
+		return this.screen_;
 	}
 
 	/**
@@ -97,6 +106,13 @@ class Router extends Component {
 	 */
 	getRouteComponent() {
 		return this.components.comp;
+	}
+
+	/**
+	 * Gets the screen that is being used by this router.
+	 */
+	getScreen() {
+		return this.screen_;
 	}
 
 	/**
