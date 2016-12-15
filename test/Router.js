@@ -544,7 +544,7 @@ describe('Router', function() {
 			path: '/path',
 			component: CustomComponent
 		});
-		var router2 = new Router({
+		router2 = new Router({
 			path: '/path2',
 			component: CustomComponent2
 		});
@@ -572,7 +572,7 @@ describe('Router', function() {
 			path: '/path',
 			component: CustomComponent
 		});
-		var router2 = new Router({
+		router2 = new Router({
 			element,
 			path: '/path2',
 			component: CustomComponent2
@@ -599,7 +599,7 @@ describe('Router', function() {
 			path: '/path',
 			component: CustomComponent
 		});
-		var router2 = new Router({
+		router2 = new Router({
 			element,
 			path: '/path2',
 			component: CustomComponent2
@@ -623,7 +623,7 @@ describe('Router', function() {
 			path: '/path',
 			component: CustomComponent
 		});
-		var router2 = new Router({
+		router2 = new Router({
 			path: '/path2',
 			component: CustomComponent
 		});
@@ -645,7 +645,7 @@ describe('Router', function() {
 			path: '/path',
 			component: 'CustomComponent'
 		});
-		var router2 = new Router({
+		router2 = new Router({
 			path: '/path2',
 			component: CustomComponent
 		});
@@ -668,7 +668,7 @@ describe('Router', function() {
 			component: CustomComponent,
 			reuseActiveComponent: false
 		});
-		var router2 = new Router({
+		router2 = new Router({
 			path: '/path2',
 			component: CustomComponent
 		});
