@@ -762,6 +762,27 @@ describe('Router', function() {
 		});
 	});
 
+	it('should not throw error if function name given for "beforeDeactivateHandler" can\'t be found', function(done) {
+		router = new Router({
+			beforeDeactivateHandler: 'handleDeactivate',
+			path: '/path1',
+			component: CustomComponent
+		});
+
+		router2 = new Router({
+			path: '/path2',
+			component: CustomComponent
+		});
+
+		Router.router().navigate('/path1').then(() => {
+			assert.ok(Router.getActiveComponent() instanceof CustomComponent);
+			assert.equal('/path1', window.location.pathname);
+
+			assert.throws(() => Router.router().navigate('/path2'));
+			done();
+		});
+	});
+
 	it('should clear active router and component when it\'s disposed', function(done) {
 		router = new Router({
 			path: '/path',

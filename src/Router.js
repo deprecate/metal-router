@@ -1,6 +1,6 @@
 'use strict';
 
-import { core, object } from 'metal';
+import { core, getFunctionName, object } from 'metal';
 import { App, RequestScreen, Route } from 'senna';
 import CancellablePromise from 'metal-promise';
 import { Component, ComponentRegistry } from 'metal-component';
@@ -342,6 +342,11 @@ class ComponentScreen extends RequestScreen {
 				const comp = this.router.getRouteComponent();
 				if (comp && core.isFunction(comp[handler])) {
 					return comp[handler]();
+				} else {
+					const compName = getFunctionName(comp);
+					throw new Error(
+						`No function named "${handler}" exists inside ${compName}.`
+					);
 				}
 			} else {
 				return handler();
