@@ -401,11 +401,9 @@ class ComponentScreen extends RequestScreen {
 				delete activeRouter.components.comp;
 				activeRouter.element = null;
 
-				// TODO: Change this to stop accessing this private data object. Need
-				// to allow `IncrementalDomRenderer` to reuse components in different
-				// owners somehow, but only when requested.
-				activeComponent.__METAL_IC_RENDERER_DATA__.owner = router;
-				activeComponent.__METAL_IC_RENDERER_DATA__.parent = router;
+				const data = activeComponent.getRenderer().getData(activeComponent);
+				data.owner = router;
+				data.parent = router;
 				router.components.comp = activeComponent;
 				router.element = activeComponent.element;
 			} else if (activeRouter.firstRenderElement === router.firstRenderElement) {
