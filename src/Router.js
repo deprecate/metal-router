@@ -392,26 +392,28 @@ class ComponentScreen extends RequestScreen {
 			var activeRouter = Router.activeRouter;
 			activeRouter.isActive_ = false;
 
-			var activeComponent = Router.getActiveComponent();
-			if (router.reuseActiveComponent && (activeComponent instanceof router.component)) {
-				// This call is important, as otherwise the component will be disposed
-				// after `activeRouter` is updated, since the router won't render
-				// anything this time. We want to reuse it in another router though.
-				activeRouter.getRenderer().skipNextChildrenDisposal(activeRouter);
-				delete activeRouter.components.comp;
-				activeRouter.element = null;
+			if (activeRouter !== router) {
+				var activeComponent = Router.getActiveComponent();
+				if (router.reuseActiveComponent && (activeComponent instanceof router.component)) {
+					// This call is important, as otherwise the component will be disposed
+					// after `activeRouter` is updated, since the router won't render
+					// anything this time. We want to reuse it in another router though.
+					activeRouter.getRenderer().skipNextChildrenDisposal(activeRouter);
+					delete activeRouter.components.comp;
+					activeRouter.element = null;
 
-				const data = activeComponent.getRenderer().getData(activeComponent);
-				data.owner = router;
-				data.parent = router;
-				router.components.comp = activeComponent;
-				router.element = activeComponent.element;
-			} else if (activeRouter.firstRenderElement === router.firstRenderElement) {
-				// If the routers were attached to the same element when created, then
-				// they should reuse the same element when active, so we can guarantee
-				// that they will be positioned correctly.
-				router.element = activeRouter.element;
-				activeRouter.element = null;
+					const data = activeComponent.getRenderer().getData(activeComponent);
+					data.owner = router;
+					data.parent = router;
+					router.components.comp = activeComponent;
+					router.element = activeComponent.element;
+				} else if (activeRouter.firstRenderElement === router.firstRenderElement) {
+					// If the routers were attached to the same element when created, then
+					// they should reuse the same element when active, so we can guarantee
+					// that they will be positioned correctly.
+					router.element = activeRouter.element;
+					activeRouter.element = null;
+				}
 			}
 		}
 
