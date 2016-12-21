@@ -23,7 +23,7 @@ class Router extends Component {
 		// the reference to its `element` and cause it to be removed from the dom
 		// (which would be bad for progressive enhancement) due to not rendering
 		// anything. It will be set back in `attached`.
-		this.firstRenderElement =  this.element;
+		this.firstRenderElement = this.element;
 		this.element = null;
 	}
 
@@ -139,7 +139,9 @@ class Router extends Component {
 	 */
 	static router() {
 		if (!Router.routerInstance) {
-			Router.routerInstance = new App();
+			const app = new App();
+			app.setIgnoreQueryStringFromRoutePath(true);
+			Router.routerInstance = app;
 		}
 		return Router.routerInstance;
 	}

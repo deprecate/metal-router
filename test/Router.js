@@ -42,6 +42,11 @@ describe('Router', function() {
 		assert.strictEqual(router, Router.router());
 	});
 
+	it('should instance of router ignore query string from route path', function() {
+		router = Router.router();
+		assert.ok(router.getIgnoreQueryStringFromRoutePath());
+	});
+
 	it('should add route to router from constructor', function() {
 		assert.ok(!Router.router().hasRoutes());
 		router = new Router({
@@ -685,7 +690,8 @@ describe('Router', function() {
 
 	it('should change router as usual if beforeDeactivateHandler returns nothing', function(done) {
 		router = new Router({
-			beforeDeactivateHandler: () => {},
+			beforeDeactivateHandler: () => {
+			},
 			path: '/path1',
 			component: CustomComponent
 		});
