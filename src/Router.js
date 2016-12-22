@@ -28,7 +28,7 @@ class Router extends Component {
 	}
 
 	/**
-	 * Addsrouting data to the given state object.
+	 * Adds routing data to the given state object.
 	 * @param {string} path
 	 * @param {!Object} state
 	 * @return {!Object}
