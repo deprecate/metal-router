@@ -550,11 +550,11 @@ describe('Router', function() {
 			component: CustomComponent
 		});
 		router2 = new Router({
-			path: '/path2',
+			path: '/path/2',
 			component: CustomComponent2
 		});
 
-		Router.router().navigate('/path2').then(() => {
+		Router.router().navigate('/path/2').then(() => {
 			var prevComponent = router2.getRouteComponent();
 			assert.strictEqual(prevComponent.element, router2.element);
 
@@ -579,11 +579,11 @@ describe('Router', function() {
 		});
 		router2 = new Router({
 			element,
-			path: '/path2',
+			path: '/path/2',
 			component: CustomComponent2
 		});
 
-		Router.router().navigate('/path2').then(() => {
+		Router.router().navigate('/path/2').then(() => {
 			assert.strictEqual(element, router2.element);
 			assert.equal('el', element.parentNode.id);
 
@@ -675,22 +675,22 @@ describe('Router', function() {
 		router = new Router({
 			beforeDeactivateHandler: () => {
 			},
-			path: '/path1',
+			path: '/path/1',
 			component: CustomComponent
 		});
 
 		router2 = new Router({
-			path: '/path2',
+			path: '/path/2',
 			component: CustomComponent2
 		});
 
-		Router.router().navigate('/path1').then(() => {
+		Router.router().navigate('/path/1').then(() => {
 			assert.ok(Router.getActiveComponent() instanceof CustomComponent);
-			assert.equal('/path1', window.location.pathname);
+			assert.equal('/path/1', window.location.pathname);
 
-			Router.router().navigate('/path2').then(() => {
+			Router.router().navigate('/path/2').then(() => {
 				assert.ok(Router.getActiveComponent() instanceof CustomComponent2);
-				assert.equal('/path2', window.location.pathname);
+				assert.equal('/path/2', window.location.pathname);
 				done();
 			});
 		});
@@ -699,22 +699,22 @@ describe('Router', function() {
 	it('should not change router if beforeDeactivateHandler returns "true"', function(done) {
 		router = new Router({
 			beforeDeactivateHandler: () => true,
-			path: '/path1',
+			path: '/path/1',
 			component: CustomComponent
 		});
 
 		router2 = new Router({
-			path: '/path2',
+			path: '/path/2',
 			component: CustomComponent2
 		});
 
-		Router.router().navigate('/path1').then(() => {
+		Router.router().navigate('/path/1').then(() => {
 			assert.ok(Router.getActiveComponent() instanceof CustomComponent);
-			assert.equal('/path1', window.location.pathname);
+			assert.equal('/path/1', window.location.pathname);
 
-			Router.router().navigate('/path2').catch(() => {
+			Router.router().navigate('/path/2').catch(() => {
 				assert.ok(Router.getActiveComponent() instanceof CustomComponent);
-				assert.equal('/path1', window.location.pathname);
+				assert.equal('/path/1', window.location.pathname);
 				done();
 			});
 		});
@@ -729,23 +729,23 @@ describe('Router', function() {
 
 		router = new Router({
 			beforeDeactivateHandler: 'handleDeactivate',
-			path: '/path1',
+			path: '/path/1',
 			component: TestComponent
 		});
 
 		router2 = new Router({
-			path: '/path2',
+			path: '/path/2',
 			component: CustomComponent
 		});
 
-		Router.router().navigate('/path1').then(() => {
+		Router.router().navigate('/path/1').then(() => {
 			assert.ok(Router.getActiveComponent() instanceof TestComponent);
-			assert.equal('/path1', window.location.pathname);
+			assert.equal('/path/1', window.location.pathname);
 
-			Router.router().navigate('/path2').catch(() => {
+			Router.router().navigate('/path/2').catch(() => {
 				assert.ok(Router.getActiveComponent() instanceof TestComponent);
-				assert.notEqual('/path2', window.location.pathname);
-				assert.equal('/path1', window.location.pathname);
+				assert.notEqual('/path/2', window.location.pathname);
+				assert.equal('/path/1', window.location.pathname);
 				done();
 			});
 		});
@@ -754,20 +754,20 @@ describe('Router', function() {
 	it('should not throw error if function name given for "beforeDeactivateHandler" can\'t be found', function(done) {
 		router = new Router({
 			beforeDeactivateHandler: 'handleDeactivate',
-			path: '/path1',
+			path: '/path/1',
 			component: CustomComponent
 		});
 
 		router2 = new Router({
-			path: '/path2',
+			path: '/path/2',
 			component: CustomComponent
 		});
 
-		Router.router().navigate('/path1').then(() => {
+		Router.router().navigate('/path/1').then(() => {
 			assert.ok(Router.getActiveComponent() instanceof CustomComponent);
-			assert.equal('/path1', window.location.pathname);
+			assert.equal('/path/1', window.location.pathname);
 
-			assert.throws(() => Router.router().navigate('/path2'));
+			assert.throws(() => Router.router().navigate('/path/2'));
 			done();
 		});
 	});
