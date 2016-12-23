@@ -595,49 +595,17 @@ describe('Router', function() {
 		});
 	});
 
-	it('should not reuse element when routing to different component that didn\'t receive same element', function(done) {
-		dom.append(document.body, '<div id="el"><div></div></div>');
-		var element = document.querySelector('#el > div');
-		var element2 = document.createElement('div');
+	it('should reuse component when routing to same router path pattern that uses same constructor', function(done) {
 		router = new Router({
-			element: element2,
-			path: '/path',
-			component: CustomComponent
-		});
-		router2 = new Router({
-			element,
-			path: '/path2',
-			component: CustomComponent2
-		});
-
-		Router.router().navigate('/path2').then(() => {
-			assert.strictEqual(element, router2.element);
-			assert.equal('el', element.parentNode.id);
-
-			Router.router().navigate('/path').then(() => {
-				assert.notEqual(element, router.element);
-				assert.strictEqual(element2, router.element);
-				assert.ok(!element.parentNode);
-				done();
-			});
-		});
-	});
-
-	it('should reuse component when routing to path that uses same constructor', function(done) {
-		router = new Router({
-			path: '/path',
-			component: CustomComponent
-		});
-		router2 = new Router({
-			path: '/path2',
+			path: '/path/:part',
 			component: CustomComponent
 		});
 
-		Router.router().navigate('/path2').then(() => {
-			var prevComponent = router2.getRouteComponent();
+		Router.router().navigate('/path/part1').then(() => {
+			var prevComponent = router.getRouteComponent();
 			sinon.spy(prevComponent, 'dispose');
 
-			Router.router().navigate('/path').then(() => {
+			Router.router().navigate('/path/part2').then(() => {
 				assert.strictEqual(0, prevComponent.dispose.callCount);
 				assert.strictEqual(prevComponent, Router.getActiveComponent());
 				done();
@@ -645,42 +613,57 @@ describe('Router', function() {
 		});
 	});
 
-	it('should reuse component when routing to path that uses same constructor name', function(done) {
+	it('should reuse component when routing to same router path pattern that uses same constructor name', function(done) {
 		router = new Router({
-			path: '/path',
+			path: '/path/:part',
+			component: 'CustomComponent'
+		});
+
+		Router.router().navigate('/path/part1').then(() => {
+			var prevComponent = router.getRouteComponent();
+			sinon.spy(prevComponent, 'dispose');
+
+			Router.router().navigate('/path/part2').then(() => {
+				assert.strictEqual(0, prevComponent.dispose.callCount);
+				assert.strictEqual(prevComponent, Router.getActiveComponent());
+				done();
+			});
+		});
+	});
+
+	it('should not reuse component when routing to different path that uses same constructor', function(done) {
+		router = new Router({
+			path: '/path/1',
+			component: CustomComponent
+		});
+		router2 = new Router({
+			path: '/path/2',
+			component: CustomComponent
+		});
+
+		Router.router().navigate('/path/2').then(() => {
+			var prevComponent = router2.getRouteComponent();
+			Router.router().navigate('/path/1').then(() => {
+				assert.ok(prevComponent.isDisposed());
+				assert.notStrictEqual(prevComponent, Router.getActiveComponent());
+				done();
+			});
+		});
+	});
+
+	it('should not reuse component when routing to different path that uses same constructor name', function(done) {
+		router = new Router({
+			path: '/path/1',
 			component: 'CustomComponent'
 		});
 		router2 = new Router({
-			path: '/path2',
-			component: CustomComponent
+			path: '/path/2',
+			component: 'CustomComponent'
 		});
 
-		Router.router().navigate('/path2').then(() => {
+		Router.router().navigate('/path/2').then(() => {
 			var prevComponent = router2.getRouteComponent();
-			sinon.spy(prevComponent, 'dispose');
-
-			Router.router().navigate('/path').then(() => {
-				assert.strictEqual(0, prevComponent.dispose.callCount);
-				assert.strictEqual(prevComponent, Router.getActiveComponent());
-				done();
-			});
-		});
-	});
-
-	it('should not reuse active component when routing to same component path if reuseActiveComponent is false', function(done) {
-		router = new Router({
-			path: '/path',
-			component: CustomComponent,
-			reuseActiveComponent: false
-		});
-		router2 = new Router({
-			path: '/path2',
-			component: CustomComponent
-		});
-
-		Router.router().navigate('/path2').then(() => {
-			var prevComponent = router2.getRouteComponent();
-			Router.router().navigate('/path').then(() => {
+			Router.router().navigate('/path/1').then(() => {
 				assert.ok(prevComponent.isDisposed());
 				assert.notStrictEqual(prevComponent, Router.getActiveComponent());
 				done();

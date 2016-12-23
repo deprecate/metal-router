@@ -281,17 +281,6 @@ Router.STATE = {
 	 * @type {!string|RegExp|Function}
 	 */
 	path: {
-	},
-
-	/**
-	 * If set to true active component will be used when routing to same
-	 * component type.
-	 * @type {boolean}
-	 * @default true
-	 */
-	reuseActiveComponent: {
-		validator: core.isBoolean,
-		value: true
 	}
 };
 
@@ -395,21 +384,7 @@ class ComponentScreen extends RequestScreen {
 			activeRouter.isActive_ = false;
 
 			if (activeRouter !== router) {
-				var activeComponent = Router.getActiveComponent();
-				if (router.reuseActiveComponent && (activeComponent instanceof router.component)) {
-					// This call is important, as otherwise the component will be disposed
-					// after `activeRouter` is updated, since the router won't render
-					// anything this time. We want to reuse it in another router though.
-					activeRouter.getRenderer().skipNextChildrenDisposal(activeRouter);
-					delete activeRouter.components.comp;
-					activeRouter.element = null;
-
-					const data = activeComponent.getRenderer().getData(activeComponent);
-					data.owner = router;
-					data.parent = router;
-					router.components.comp = activeComponent;
-					router.element = activeComponent.element;
-				} else if (activeRouter.firstRenderElement === router.firstRenderElement) {
+				if (activeRouter.firstRenderElement === router.firstRenderElement) {
 					// If the routers were attached to the same element when created, then
 					// they should reuse the same element when active, so we can guarantee
 					// that they will be positioned correctly.
