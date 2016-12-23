@@ -376,22 +376,11 @@ class ComponentScreen extends RequestScreen {
 			router = redirectRouter;
 		}
 
-		Router.activeState = this.maybeParseLastLoadedStateAsJson();
-		Router.activeState = this.router.addRoutingData(path, Router.activeState);
+		Router.activeState = this.router.addRoutingData(path, this.maybeParseLastLoadedStateAsJson());
 
 		if (Router.activeRouter) {
-			var activeRouter = Router.activeRouter;
-			activeRouter.isActive_ = false;
-
-			if (activeRouter !== router) {
-				if (activeRouter.firstRenderElement === router.firstRenderElement) {
-					// If the routers were attached to the same element when created, then
-					// they should reuse the same element when active, so we can guarantee
-					// that they will be positioned correctly.
-					router.element = activeRouter.element;
-					activeRouter.element = null;
-				}
-			}
+			Router.activeRouter.isActive_ = false;
+			this.reuseActiveRouterElementInNewRouter_(router);
 		}
 
 		Router.activeRouter = router;
@@ -462,6 +451,23 @@ class ComponentScreen extends RequestScreen {
 			return JSON.parse(state);
 		} catch (err) {
 			return core.isDefAndNotNull(state) ? state : {};
+		}
+	}
+
+	/**
+	 * If the routers were attached to the same element when created, then they
+	 * should reuse the same element when active, so we can guarantee that they
+	 * will be positioned correctly.
+	 * @param {Router} router The new router.
+	 * @protected
+	 */
+	reuseActiveRouterElementInNewRouter_(router) {
+		const activeRouter = Router.activeRouter;
+		if (activeRouter !== router) {
+			if (activeRouter.firstRenderElement === router.firstRenderElement) {
+				router.element = activeRouter.element;
+				activeRouter.element = null;
+			}
 		}
 	}
 }
