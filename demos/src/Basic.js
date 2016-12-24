@@ -1,8 +1,8 @@
 'use strict';
 
-import { About } from './About.soy';
+import { About } from './About';
 import Component from 'metal-component';
-import { Home } from './Home.soy';
+import { Home } from './Home';
 import Router from '../../src/all/router.js';
 import './Image.soy';
 
