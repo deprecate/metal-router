@@ -25,3 +25,7 @@ Routing solution to link URLs to Metal.js components using HTML5 History API.
   ```
   gulp build
   ```
+
+## Demo
+
+  Check it out the demo page by running `npm run demo`.
