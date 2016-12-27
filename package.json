@@ -16,9 +16,8 @@
     "src"
   ],
   "scripts": {
-    "build:demo": "gulp soy && metal build -s demos/src/**/*.js -d demos/build --soySrc demos/src/**/*.soy --soyDest demos/src --soyDeps src/RouterSoy.soy",
     "compile": "babel --presets metal -d lib/ src/",
-    "demo": "npm run build:demo && gulp webserver",
+    "demo": "gulp soy && metal build -s demos/src/**/*.js -d demos/build --soySrc demos/src/**/*.soy --soyDest demos/src --soyDeps src/RouterSoy.soy && gulp webserver",
     "prepublish": "gulp && npm run compile",
     "test": "gulp test"
   },
