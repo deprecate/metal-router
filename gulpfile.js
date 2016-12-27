@@ -11,12 +11,12 @@ metal.registerTasks({
 	mainBuildJsTasks: ['build:globals'],
 	moduleName: 'metal-router'
 });
- 
+
 gulp.task('webserver', function() {
-  gulp.src('./')
-    .pipe(webserver({
-      open: 'http://localhost:8000/demos/index.html'
-    }));
+	gulp.src('./')
+		.pipe(webserver({
+			open: 'http://localhost:8000/demos/index.html'
+		}));
 });
 
 gulp.task('default', function(done) {
