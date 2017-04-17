@@ -281,6 +281,14 @@ Router.STATE = {
 	 * @type {!string|RegExp|Function}
 	 */
 	path: {
+	},
+
+	/**
+	 * Sets the portlet namespace for this router.
+	 * @type {!string}
+	 */
+	portletNamespace: {
+		validator: core.isString
 	}
 };
 

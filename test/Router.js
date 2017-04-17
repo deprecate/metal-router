@@ -787,6 +787,19 @@ describe('Router', function() {
 			done();
 		});
 	});
+
+	it('should set the portletNamespace', function() {
+		router = new Router({
+			path: '/path',
+			portletNamespace: '_test_portlet'
+		});
+
+		assert.ok(Object.prototype.hasOwnProperty.call(router, 'portletNamespace'));
+		assert.ok(router.portletNamespace, '_test_portlet');
+
+		router.portletNamespace = 123;
+		assert.ok(router.portletNamespace, '_test_portlet');
+	});
 });
 
 class CustomComponent extends Component {
