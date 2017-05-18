@@ -27,7 +27,7 @@
   "dependencies": {
     "metal-promise": "^2.0.1",
     "metal-soy": "^2.5.18",
-    "senna": "^2.1.2"
+    "senna": "^2.1.6"
   },
   "devDependencies": {
     "babel-cli": "^6.4.5",
