@@ -369,22 +369,23 @@ class ComponentScreen extends RequestScreen {
 	 * @inheritDoc
 	 */
 	flip() {
-		var router = this.router;
-		var path = router.lastPath;
 		var redirectRouter = this.maybeFindRedirectRouter();
 		if (redirectRouter) {
-			router = redirectRouter;
+			// If performing a redirect use "redirectRouter" as "this.router". The
+			// initiator "this.router" is completely ignored from now on.
+			this.router = redirectRouter;
 		}
 
-		Router.activeState = this.router.addRoutingData(path, this.maybeParseLastLoadedStateAsJson());
+		Router.activeState = this.router.addRoutingData(
+			this.router.lastPath, this.maybeParseLastLoadedStateAsJson());
 
 		if (Router.activeRouter) {
 			Router.activeRouter.isActive_ = false;
-			this.reuseActiveRouterElementInNewRouter_(router);
+			this.reuseActiveRouterElementInNewRouter_(this.router);
 		}
 
-		Router.activeRouter = router;
-		router.isActive_ = true;
+		Router.activeRouter = this.router;
+		Router.activeRouter.isActive_ = true;
 	}
 
 	/**
@@ -416,10 +417,25 @@ class ComponentScreen extends RequestScreen {
 		}
 		return deferred.then((loadedState) => {
 			this.router.lastPath = path;
+			this.router.lastRedirectPath = this.maybeFindRedirectPath();
 			this.router.lastLoadedState = loadedState;
 			this.router.lastExtractedParams = params;
 			return loadedState;
 		});
+	}
+
+	/**
+	 * Some responses made by superclass performs a 302 redirect which will be
+	 * reflected into the browser history path. When redirected, make sure to
+	 * render the best component match to new path.
+	 * @return {?String} Redirect path.
+	 */
+	maybeFindRedirectPath() {
+		var redirectPath = this.beforeUpdateHistoryPath(this.router.lastPath);
+		if (redirectPath !== this.router.lastPath) {
+			return redirectPath;
+		}
+		return null;
 	}
 
 	/**
@@ -430,10 +446,16 @@ class ComponentScreen extends RequestScreen {
 	 * @return {Router}
 	 */
 	maybeFindRedirectRouter() {
-		var redirectPath = this.beforeUpdateHistoryPath(this.router.lastPath);
-		if (redirectPath !== this.router.lastPath) {
+		var redirectPath = this.maybeFindRedirectPath();
+		if (redirectPath) {
 			var redirectRoute = Router.router().findRoute(redirectPath);
 			if (redirectRoute) {
+				// The initiator component will load the render state and follow any
+				// "302" redirect that may happen. Therefore, the data returned of the
+				// redirect is used as "lastLoadedState" and the "lastRedirectPath" as
+				// "lastPath" for redirect router.
+				redirectRoute.router.lastPath = this.router.lastRedirectPath;
+				redirectRoute.router.lastLoadedState = this.router.lastLoadedState;
 				return redirectRoute.router;
 			}
 		}

@@ -476,6 +476,53 @@ describe('Router', function() {
 		});
 	});
 
+	it('should set redirect router as active router', function(done) {
+		class TestScreen extends Router.defaultScreen {
+			beforeUpdateHistoryPath() {
+				return '/redirect';
+			}
+		}
+		Router.defaultScreen = TestScreen;
+
+		router = new Router({
+			path: '/path',
+			component: CustomComponent
+		});
+		var redirectRouter = new Router({
+			path: '/redirect',
+			component: RedirectComponent
+		});
+		Router.router().navigate('/path').then(() => {
+			assert.strictEqual(redirectRouter, Router.activeRouter);
+			redirectRouter.dispose();
+			done();
+		});
+	});
+
+	it('should store "lastPath" and "lastLoadedState" in redirect router when routing to path that got redirected', function(done) {
+		class TestScreen extends Router.defaultScreen {
+			beforeUpdateHistoryPath() {
+				return '/redirect';
+			}
+		}
+		Router.defaultScreen = TestScreen;
+
+		router = new Router({
+			path: '/path',
+			component: CustomComponent
+		});
+		var redirectRouter = new Router({
+			path: '/redirect',
+			component: RedirectComponent
+		});
+		Router.router().navigate('/path').then(() => {
+			assert.strictEqual('/redirect', Router.activeRouter.lastPath);
+			assert.deepEqual({}, Router.activeRouter.lastLoadedState);
+			redirectRouter.dispose();
+			done();
+		});
+	});
+
 	it('should render original component when routing to path that got redirected without match route', function(done) {
 		class TestScreen extends Router.defaultScreen {
 			beforeUpdateHistoryPath() {
