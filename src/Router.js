@@ -384,9 +384,10 @@ class ComponentScreen extends RequestScreen {
 			this.reuseActiveRouterElementInNewRouter_(this.router);
 		}
 
+		const deferred = this.waitRouterRenderSubComponents(this.router);
 		Router.activeRouter = this.router;
 		Router.activeRouter.isActive_ = true;
-		return this.waitRouterRenderSubComponents(Router.activeRouter);
+		return deferred;
 	}
 
 	/**
