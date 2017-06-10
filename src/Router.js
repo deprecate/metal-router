@@ -386,6 +386,7 @@ class ComponentScreen extends RequestScreen {
 
 		Router.activeRouter = this.router;
 		Router.activeRouter.isActive_ = true;
+		return this.waitRouterRenderSubComponents(Router.activeRouter);
 	}
 
 	/**
@@ -491,6 +492,15 @@ class ComponentScreen extends RequestScreen {
 				activeRouter.element = null;
 			}
 		}
+	}
+
+	/**
+	 * @param {Router} router
+	 * @return {Promise}
+	 * @protected
+	 */
+	waitRouterRenderSubComponents(router) {
+		return new Promise((res) => router.once('rendered', res));
 	}
 }
 

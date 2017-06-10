@@ -834,6 +834,26 @@ describe('Router', function() {
 			done();
 		});
 	});
+
+	it('should defer screen flip until Router component render all children', function(done) {
+		let activeComponent;
+		class TestScreen extends Router.defaultScreen {
+			flip() {
+				return super.flip()
+					.then(() => activeComponent = Router.getActiveComponent());
+			}
+		}
+		Router.defaultScreen = TestScreen;
+
+		router = new Router({
+			path: '/path',
+			component: CustomComponent
+		});
+		Router.router().navigate('/path').then(() => {
+			assert.ok(activeComponent);
+			done();
+		});
+	});
 });
 
 class CustomComponent extends Component {
