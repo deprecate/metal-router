@@ -494,6 +494,9 @@ describe('Router', function() {
 		});
 		Router.router().navigate('/path').then(() => {
 			assert.strictEqual(redirectRouter, Router.activeRouter);
+			assert.strictEqual(RedirectComponent, Router.router().screens['/redirect'].router.component);
+			assert.ok(!Router.router().screens['/path']);
+			assert.ok(Router.router().screens['/redirect']);
 			redirectRouter.dispose();
 			done();
 		});

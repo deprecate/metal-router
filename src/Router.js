@@ -369,12 +369,7 @@ class ComponentScreen extends RequestScreen {
 	 * @inheritDoc
 	 */
 	flip() {
-		var redirectRouter = this.maybeFindRedirectRouter();
-		if (redirectRouter) {
-			// If performing a redirect use "redirectRouter" as "this.router". The
-			// initiator "this.router" is completely ignored from now on.
-			this.router = redirectRouter;
-		}
+		this.maybeRedirectRouter();
 
 		Router.activeState = this.router.addRoutingData(
 			this.router.lastPath, this.maybeParseLastLoadedStateAsJson());
@@ -475,6 +470,25 @@ class ComponentScreen extends RequestScreen {
 			return JSON.parse(state);
 		} catch (err) {
 			return core.isDefAndNotNull(state) ? state : {};
+		}
+	}
+
+	/**
+	 * @protected
+	 */
+	maybeRedirectRouter() {
+		var redirectRouter = this.maybeFindRedirectRouter();
+		if (redirectRouter) {
+			// If performing a redirect use "redirectRouter" as "this.router". The
+			// initiator "this.router" is completely ignored from now on.
+			this.router = redirectRouter;
+
+			// Schedule screen cache redirect on "endNavigate".
+			const app = Router.router();
+			app.once('endNavigate', () => {
+				app.screens[app.redirectPath] = app.screens[app.activePath];
+				delete app.screens[app.activePath];
+			});
 		}
 	}
 
