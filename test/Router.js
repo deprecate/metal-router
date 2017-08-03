@@ -365,6 +365,27 @@ describe('Router', function() {
 		});
 	});
 
+	it('should add extracted query data to the active state by default', function(done) {
+		var data = {
+			foo: 'foo'
+		};
+		router = new Router({
+			data: data,
+			path: '/path',
+			component: CustomComponent
+		});
+		Router.router().navigate('/path?foo=bar&baz=qux').then(() => {
+			assert.ok(Router.activeState.router);
+
+			var query = {
+				foo: 'bar',
+				baz: 'qux'
+			};
+			assert.deepEqual(query, Router.activeState.router.query);
+			done();
+		});
+	});
+
 	it('should not include data in the active state if "includeRoutingData" is set to false', function(done) {
 		var data = {
 			foo: 'foo'
