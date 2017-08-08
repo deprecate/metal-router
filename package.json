@@ -27,6 +27,7 @@
   "dependencies": {
     "metal-promise": "^2.0.1",
     "metal-soy": "^2.5.18",
+    "metal-uri": "^2.2.6",
     "senna": "^2.3.1"
   },
   "devDependencies": {

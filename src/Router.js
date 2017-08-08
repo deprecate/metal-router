@@ -5,6 +5,7 @@ import { App, RequestScreen, Route } from 'senna';
 import CancellablePromise from 'metal-promise';
 import { Component, ComponentRegistry } from 'metal-component';
 import IncrementalDomRenderer from 'metal-incremental-dom';
+import Uri from 'metal-uri';
 
 /**
  * Router class responsible for routing links to components.
@@ -36,10 +37,12 @@ class Router extends Component {
 	addRoutingData(path, state) {
 		if (this.includeRoutingData) {
 			const params = this.lastExtractedParams || this.extractParams(path);
+			const query = this.extractQuery(path);
 			return object.mixin({}, state, {
 				router: {
 					currentUrl: path,
-					params
+					params,
+					query
 				}
 			});
 		}
@@ -82,6 +85,26 @@ class Router extends Component {
 	 */
 	extractParams(path) {
 		return Router.router().extractParams(this.route, path);
+	}
+
+	/**
+	 * Extracts any query params present in the given path.
+	 * @param {string} path
+	 * @return {Object}
+	 */
+	extractQuery(path) {
+		const uri = new Uri(path);
+		const queryStrings = {};
+
+		const parameterNames = uri.getParameterNames();
+
+		for (let i = 0; i < parameterNames.length; i++) {
+			const name = parameterNames[i];
+
+			queryStrings[name] = uri.getParameterValue(name);
+		}
+
+		return queryStrings;
 	}
 
 	/**
