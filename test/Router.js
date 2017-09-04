@@ -178,7 +178,7 @@ describe('Router', function() {
 		Router.router().navigate('/path').then(() => {
 			assert.strictEqual('sentinel', router.lastLoadedState);
 			assert.strictEqual(1, RequestScreen.prototype.load.callCount);
-			RequestScreen.load.restore();
+			RequestScreen.prototype.load.restore();
 			done();
 		});
 	});
@@ -195,7 +195,7 @@ describe('Router', function() {
 		Router.router().navigate('/path').then(() => {
 			assert.equal(true, Router.activeState.sentinel);
 			assert.strictEqual(1, RequestScreen.prototype.load.callCount);
-			RequestScreen.load.restore();
+			RequestScreen.prototype.load.restore();
 			done();
 		});
 	});
@@ -214,7 +214,7 @@ describe('Router', function() {
 			assert.strictEqual('sentinel', router.lastLoadedState);
 			assert.strictEqual(1, RequestScreen.prototype.load.callCount);
 			assert.strictEqual('/fetch/path', RequestScreen.prototype.load.args[0][0]);
-			RequestScreen.load.restore();
+			RequestScreen.prototype.load.restore();
 			done();
 		});
 	});
