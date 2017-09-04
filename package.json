@@ -25,6 +25,7 @@
     "metal"
   ],
   "dependencies": {
+    "metal": "^2.13.2",
     "metal-promise": "^2.0.1",
     "metal-soy": "^2.5.18",
     "metal-uri": "^2.2.6",
