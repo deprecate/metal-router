@@ -4,6 +4,7 @@ import dom from 'metal-dom';
 import Ajax from 'metal-ajax';
 import { Component, ComponentRegistry } from 'metal-component';
 import IncrementalDomRenderer from 'metal-incremental-dom';
+import Promise from 'metal-promise';
 import RequestScreen from 'senna/src/screen/RequestScreen';
 import Router from '../src/Router';
 
