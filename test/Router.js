@@ -178,7 +178,7 @@ describe('Router', function() {
 		Router.router().navigate('/path').then(() => {
 			assert.strictEqual('sentinel', router.lastLoadedState);
 			assert.strictEqual(1, RequestScreen.prototype.load.callCount);
-			stub.restore();
+			RequestScreen.load.restore();
 			done();
 		});
 	});
@@ -195,7 +195,7 @@ describe('Router', function() {
 		Router.router().navigate('/path').then(() => {
 			assert.equal(true, Router.activeState.sentinel);
 			assert.strictEqual(1, RequestScreen.prototype.load.callCount);
-			stub.restore();
+			RequestScreen.load.restore();
 			done();
 		});
 	});
@@ -214,7 +214,7 @@ describe('Router', function() {
 			assert.strictEqual('sentinel', router.lastLoadedState);
 			assert.strictEqual(1, RequestScreen.prototype.load.callCount);
 			assert.strictEqual('/fetch/path', RequestScreen.prototype.load.args[0][0]);
-			stub.restore();
+			RequestScreen.load.restore();
 			done();
 		});
 	});
@@ -233,7 +233,7 @@ describe('Router', function() {
 			assert.strictEqual('sentinel', router.lastLoadedState);
 			assert.strictEqual(1, RequestScreen.prototype.load.callCount);
 			assert.strictEqual('/path.json', RequestScreen.prototype.load.args[0][0]);
-			stub.restore();
+			RequestScreen.load();
 			done();
 		});
 	});
@@ -258,6 +258,7 @@ describe('Router', function() {
 		Router.router().navigate('/path').then(() => {
 			assert.notEqual('/fetchUrl', window.location.pathname);
 			assert.equal('/path', window.location.pathname);
+			Ajax.request.restore();
 			done();
 		});
 	});
