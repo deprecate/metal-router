@@ -1,9 +1,48 @@
 'use strict';
 
-var metalKarmaConfig = require('metal-karma-config');
+module.exports = function(config) {
+	config.set({
+		browsers: ['Chrome'],
 
-module.exports = function (config) {
-	metalKarmaConfig(config);
-	config.files.push('node_modules/senna/src/**/*.js');
-	config.preprocessors['node_modules/senna/**/*.js'] = ['babel', 'commonjs'];
+		frameworks: ['mocha', 'chai', 'sinon'],
+
+		files: [
+			{
+				pattern: 'test/**/*.js',
+				watched: false,
+				included: true,
+				served: true
+			}
+		],
+
+		plugins: [
+			'karma-chai',
+			'karma-chrome-launcher',
+			'karma-mocha',
+			'karma-sinon',
+			'karma-webpack'
+		],
+
+		preprocessors: {
+			'test/**/*.js': ['webpack']
+		},
+
+		webpack: {
+			module: {
+				rules: [{
+					test: /\.js$/,
+					exclude: /(node_modules)/,
+					use: {
+						loader: 'babel-loader',
+						options: {
+							compact: false,
+							presets: ['env']
+						}
+					}
+				}]
+			}
+		},
+
+		singleRun: true
+	});
 };
