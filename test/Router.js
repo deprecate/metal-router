@@ -3,6 +3,7 @@
 import Ajax from 'metal-ajax';
 import IncrementalDomRenderer from 'metal-incremental-dom';
 import dom from 'metal-dom';
+import CancellablePromise from 'metal-promise';
 import {Component, ComponentRegistry} from 'metal-component';
 import {RequestScreen} from 'senna';
 
@@ -112,7 +113,7 @@ describe('Router', function() {
 	});
 
 	it('should router wrap data object or deferred in a function', function() {
-		var data = new Promise(function() {});
+		var data = new CancellablePromise(function() {});
 		router = new Router({
 			data: data,
 			path: '/path',
@@ -241,7 +242,7 @@ describe('Router', function() {
 
 	it('should not use fetch url as navigation url', function(done) {
 		const stub = sinon.stub(Ajax, 'request').callsFake(function() {
-			return new Promise(function(resolve) {
+			return new CancellablePromise(function(resolve) {
 				resolve({
 					getResponseHeader: () => null,
 					status: 200

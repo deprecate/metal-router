@@ -538,7 +538,7 @@ class ComponentScreen extends RequestScreen {
 	 * @protected
 	 */
 	waitRouterRenderSubComponents(router) {
-		return new Promise((res) => router.once('rendered', res));
+		return new CancellablePromise((res) => router.once('rendered', res));
 	}
 }
 
