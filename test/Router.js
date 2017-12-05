@@ -1,11 +1,13 @@
 'use strict';
 
-import dom from 'metal-dom';
 import Ajax from 'metal-ajax';
-import { Component, ComponentRegistry } from 'metal-component';
 import IncrementalDomRenderer from 'metal-incremental-dom';
-import RequestScreen from 'senna/src/screen/RequestScreen';
+import dom from 'metal-dom';
+import {Component, ComponentRegistry} from 'metal-component';
+import {RequestScreen} from 'senna';
+
 import Router from '../src/Router';
+import RouterSoy from '../src/Router';
 
 const defaultScreen = Router.defaultScreen;
 
@@ -166,7 +168,7 @@ describe('Router', function() {
 	});
 
 	it('should load path url and stores as router lastLoadedState if "fetch" is true', function(done) {
-		var stub = sinon.stub(RequestScreen.prototype, 'load', function() {
+		var stub = sinon.stub(RequestScreen.prototype, 'load').callsFake(function() {
 			return 'sentinel';
 		});
 		router = new Router({
@@ -183,7 +185,7 @@ describe('Router', function() {
 	});
 
 	it('should load path url and stores as router lastLoadedState as Json if "fetch" is true', function(done) {
-		var stub = sinon.stub(RequestScreen.prototype, 'load', function() {
+		var stub = sinon.stub(RequestScreen.prototype, 'load').callsFake(function() {
 			return '{"sentinel":true}';
 		});
 		router = new Router({
@@ -200,7 +202,7 @@ describe('Router', function() {
 	});
 
 	it('should fetch data from url specified by "fetchUrl" when "fetch" is true', function(done) {
-		var stub = sinon.stub(RequestScreen.prototype, 'load', function() {
+		var stub = sinon.stub(RequestScreen.prototype, 'load').callsFake(function() {
 			return 'sentinel';
 		});
 		router = new Router({
@@ -219,7 +221,7 @@ describe('Router', function() {
 	});
 
 	it('should fetch data from url specified by "fetchUrl" function when "fetch" is true', function(done) {
-		var stub = sinon.stub(RequestScreen.prototype, 'load', function() {
+		var stub = sinon.stub(RequestScreen.prototype, 'load').callsFake(function() {
 			return 'sentinel';
 		});
 		router = new Router({
@@ -238,7 +240,7 @@ describe('Router', function() {
 	});
 
 	it('should not use fetch url as navigation url', function(done) {
-		sinon.stub(Ajax, 'request', function() {
+		const stub = sinon.stub(Ajax, 'request').callsFake(function() {
 			return new Promise(function(resolve) {
 				resolve({
 					getResponseHeader: () => null,
@@ -257,6 +259,7 @@ describe('Router', function() {
 		Router.router().navigate('/path').then(() => {
 			assert.notEqual('/fetchUrl', window.location.pathname);
 			assert.equal('/path', window.location.pathname);
+			stub.restore();
 			done();
 		});
 	});
@@ -877,6 +880,24 @@ describe('Router', function() {
 			assert.ok(activeComponent);
 			done();
 		});
+	});
+});
+
+describe('RouterSoy', function() {
+	var component;
+
+	afterEach(function() {
+		if (component) {
+			component.dispose();
+		}
+	});
+
+	it('should create instances of Router', function() {
+		component = new RouterSoy({
+			path: '/path',
+			component: CustomComponent
+		});
+		assert.ok(component instanceof Router);
 	});
 });
 
