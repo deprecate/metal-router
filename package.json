@@ -22,6 +22,7 @@
     "demo": "npm run soy && npm run build && npm run start",
     "format": "npm run prettier -- --write",
     "lint": "eslint '{src,test}/**/*.js' --ignore-pattern '*.soy.js'",
+    "precommit": "lint-staged",
     "prepublish": "npm run soy && npm run compile",
     "prettier": "prettier-eslint '{src,test}/**/*.js'",
     "soy": "metalsoy",
@@ -54,6 +55,7 @@
     "karma-sauce-launcher": "~1.1.0",
     "karma-sinon": "^1.0.5",
     "karma-webpack": "^2.0.6",
+    "lint-staged": "^6.0.0",
     "metal-ajax": "^2.0.3",
     "metal-karma-config": "^2.1.1",
     "metal-tools-soy": "^4.0.0",
@@ -63,5 +65,11 @@
     "run-sequence": "^1.2.2",
     "sinon": "^4.1.2",
     "webpack": "^3.10.0"
+  },
+  "lint-staged": {
+    "*.js": [
+      "npm run format",
+      "git add"
+    ]
   }
 }
