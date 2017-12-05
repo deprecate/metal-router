@@ -1,6 +1,6 @@
 'use strict';
 
-import {core, getFunctionName, object} from 'metal';
+import {core, getFunctionName, isString, object} from 'metal';
 import {App, RequestScreen, Route} from 'senna';
 import CancellablePromise from 'metal-promise';
 import {Component, ComponentRegistry} from 'metal-component';
@@ -26,6 +26,43 @@ class Router extends Component {
 		// anything. It will be set back in `attached`.
 		this.firstRenderElement = this.element;
 		this.element = null;
+
+		this.createChildRouters_();
+	}
+
+	/**
+	 * Joins parent path and child path to create nested Router.
+	 * @param {!Object} child
+	 * @protected
+	 */
+	createChildRouter_(child) {
+		if (child.tag !== Router) {
+			throw new TypeError(
+				'Router can only receive additional Routers as children.'
+			);
+		}
+
+		const {config} = child;
+
+		if (!isString(this.path) || !isString(config.path)) {
+			throw new TypeError(
+				'When nesting Routers, both parent and child path values must be strings.'
+			);
+		}
+
+		config.path = Uri.joinPaths(this.path, config.path);
+
+		new child.tag(config); // eslint-disable-line
+	}
+
+	/**
+	 * Loops through children Routers and invokes them.
+	 * @protected
+	 */
+	createChildRouters_() {
+		if (this.children.length) {
+			this.children.forEach(this.createChildRouter_.bind(this));
+		}
 	}
 
 	/**
