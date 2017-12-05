@@ -22,7 +22,8 @@
     "prepublish": "npm run compile",
     "soy": "metalsoy",
     "start": "http-server . -o http://localhost:8080/demos/index.html",
-    "test": "karma start"
+    "test": "karma start",
+    "test:saucelabs": "karma start karma-saucelabs.conf.js"
   },
   "keywords": [
     "metal"
@@ -44,6 +45,7 @@
     "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "^2.2.0",
     "karma-mocha": "^1.3.0",
+    "karma-sauce-launcher": "~1.1.0",
     "karma-sinon": "^1.0.5",
     "karma-webpack": "^2.0.6",
     "metal-ajax": "^2.0.3",
