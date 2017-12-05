@@ -60,10 +60,11 @@ class Router extends Component {
 
 	/**
 	 * Creates the screen to be used by this router.
+	 * @return {ComponentScreen}
 	 * @protected
 	 */
 	createScreen_() {
-		this.screen_ = new Router.defaultScreen(this);
+		this.screen_ = new Router.defaultScreen(this); // eslint-disable-line
 		return this.screen_;
 	}
 
@@ -135,6 +136,7 @@ class Router extends Component {
 
 	/**
 	 * Gets the screen that is being used by this router.
+	 * @return {ComponentScreen}
 	 */
 	getScreen() {
 		return this.screen_;
@@ -188,6 +190,8 @@ class Router extends Component {
 	 * Makes sure that the `Router` is only rerendered if either `isActive_` or
 	 * `component` has changed. The other state properties are not used for
 	 * rendering.
+	 * @param {!Object} changes
+	 * @return {boolean|Component}
 	 */
 	shouldUpdate(changes) {
 		return changes.isActive_ || changes.component;
@@ -322,6 +326,9 @@ Router.activeRouter = null;
  */
 Router.activeState = null;
 
+/**
+ * ComponentScreen class.
+ */
 class ComponentScreen extends RequestScreen {
 	/**
 	 * @inheritDoc
@@ -374,7 +381,8 @@ class ComponentScreen extends RequestScreen {
 	 * Returns the path that should be used to update navigation history. When
 	 * `fetchUrl` is given we should make sure that the original path is used
 	 * instead of the request one.
-	 * @param {string}
+	 * @param {string} path
+	 * @return {!string}
 	 */
 	beforeUpdateHistoryPath(path) {
 		return this.router.fetchUrl
@@ -481,7 +489,7 @@ class ComponentScreen extends RequestScreen {
 				// redirect is used as "lastLoadedState" and the "lastRedirectPath" as
 				// "lastPath" for redirect router.
 				redirectRoute.router.lastPath = this.router.lastRedirectPath;
-				redirectRoute.router.lastLoadedState = this.router.lastLoadedState;
+				redirectRoute.router.lastLoadedState = this.router.lastLoadedState; // eslint-disable-line
 				return redirectRoute.router;
 			}
 		}

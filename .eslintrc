@@ -3,5 +3,8 @@
 		"browser": true,
 		"node": true
 	},
-	"extends": "liferay"
+	"extends": "liferay",
+	"globals": {
+		"IncrementalDOM": true
+	}
 }
