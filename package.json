@@ -22,7 +22,7 @@
     "demo": "npm run soy && npm run build && npm run start",
     "format": "npm run prettier -- --write",
     "lint": "eslint '{src,test}/**/*.js' --ignore-pattern '*.soy.js'",
-    "prepublish": "npm run compile",
+    "prepublish": "npm run soy && npm run compile",
     "prettier": "prettier-eslint '{src,test}/**/*.js'",
     "soy": "metalsoy",
     "start": "http-server . -o http://localhost:8080/demos/index.html",
