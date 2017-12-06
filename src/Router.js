@@ -27,12 +27,19 @@ class Router extends Component {
 		this.firstRenderElement = this.element;
 		this.element = null;
 
+		/**
+		 * List of child routers that may have been created.
+		 * @type {?Array}
+		 */
+		this.childRouters = null;
+
 		this.createChildRouters_();
 	}
 
 	/**
 	 * Joins parent path and child path to create nested Router.
 	 * @param {!Object} child
+	 * @return {!Router}
 	 * @protected
 	 */
 	createChildRouter_(child) {
@@ -52,7 +59,7 @@ class Router extends Component {
 
 		config.path = Uri.joinPaths(this.path, config.path);
 
-		new child.tag(config); // eslint-disable-line
+		return new child.tag(config); // eslint-disable-line
 	}
 
 	/**
@@ -61,7 +68,9 @@ class Router extends Component {
 	 */
 	createChildRouters_() {
 		if (this.children.length) {
-			this.children.forEach(this.createChildRouter_.bind(this));
+			this.childRouters = this.children.map(
+				this.createChildRouter_.bind(this)
+			);
 		}
 	}
 
@@ -106,6 +115,17 @@ class Router extends Component {
 	}
 
 	/**
+	 * Disposes any child routers that may have been created.
+	 */
+	disposeChildRouters_() {
+		if (this.childRouters) {
+			this.childRouters.forEach(childRouter => {
+				childRouter.dispose();
+			});
+		}
+	}
+
+	/**
 	 * @inheritDoc
 	 */
 	disposeInternal() {
@@ -113,6 +133,7 @@ class Router extends Component {
 			Router.activeRouter = null;
 		}
 		Router.router().removeRoute(this.route);
+		this.disposeChildRouters_();
 		super.disposeInternal();
 	}
 

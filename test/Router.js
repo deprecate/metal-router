@@ -1141,6 +1141,55 @@ describe('Router', function() {
 			comp = new ParentComponent();
 		}, 'Router can only receive additional Routers as children.');
 	});
+
+	it('should dispose child routers when parent router is disposed', function() {
+		class FirstComponent {}
+
+		class ParentComponent extends Component {
+			render() {
+				IncrementalDOM.elementOpen(
+					Router,
+					null,
+					null,
+					'component',
+					FirstComponent,
+					'path',
+					'/path'
+				);
+				IncrementalDOM.elementVoid(
+					Router,
+					null,
+					null,
+					'component',
+					FirstComponent,
+					'path',
+					'/first'
+				);
+				IncrementalDOM.elementVoid(
+					Router,
+					null,
+					null,
+					'component',
+					FirstComponent,
+					'path',
+					'/second'
+				);
+				IncrementalDOM.elementClose(Router);
+			}
+		}
+		ParentComponent.RENDERER = IncrementalDomRenderer;
+
+		comp = new ParentComponent();
+
+		const {routes} = Router.router();
+
+		assert.equal(routes[0].path, '/path');
+		assert.ok(Router.router().hasRoutes());
+
+		routes[0].router.dispose();
+
+		assert.ok(!Router.router().hasRoutes());
+	});
 });
 
 describe('RouterSoy', function() {
