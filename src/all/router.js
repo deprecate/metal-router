@@ -4,4 +4,4 @@ import Router from '../Router';
 import RouterSoy from '../RouterSoy';
 
 export default Router;
-export { Router, RouterSoy };
+export {Router, RouterSoy};

@@ -1,5 +1,9 @@
 # metal-router
 
+[![Build Status](https://travis-ci.org/metal/metal-router.svg?branch=master)](https://travis-ci.org/metal/metal-router)
+
+[![Build Status](https://saucelabs.com/browser-matrix/metal-router.svg)](https://saucelabs.com/beta/builds/7fd4f0c40d2e4777abd005a50e6ac16b)
+
 Routing solution to link URLs to Metal.js components using HTML5 History API.
 
 ![](https://raw.githubusercontent.com/metal/metal-router/master/demos/img/sample.gif)
