@@ -366,9 +366,7 @@ class ComponentScreen extends RequestScreen {
 				} else {
 					const compName = getFunctionName(comp);
 					throw new Error(
-						`No function named "${handler}" exists inside ${
-							compName
-						}.`
+						`No function named "${handler}" exists inside ${compName}.`
 					);
 				}
 			} else {
