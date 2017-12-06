@@ -168,9 +168,7 @@ describe('Router', function() {
 		assert.strictEqual(30000, screen.timeout);
 	});
 
-	it('should load path url and stores as router lastLoadedState if "fetch" is true', function(
-		done
-	) {
+	it('should load path url and stores as router lastLoadedState if "fetch" is true', function(done) {
 		let stub = sinon
 			.stub(RequestScreen.prototype, 'load')
 			.callsFake(function() {
@@ -191,9 +189,7 @@ describe('Router', function() {
 			});
 	});
 
-	it('should load path url and stores as router lastLoadedState as Json if "fetch" is true', function(
-		done
-	) {
+	it('should load path url and stores as router lastLoadedState as Json if "fetch" is true', function(done) {
 		let stub = sinon
 			.stub(RequestScreen.prototype, 'load')
 			.callsFake(function() {
@@ -214,9 +210,7 @@ describe('Router', function() {
 			});
 	});
 
-	it('should fetch data from url specified by "fetchUrl" when "fetch" is true', function(
-		done
-	) {
+	it('should fetch data from url specified by "fetchUrl" when "fetch" is true', function(done) {
 		let stub = sinon
 			.stub(RequestScreen.prototype, 'load')
 			.callsFake(function() {
@@ -242,9 +236,7 @@ describe('Router', function() {
 			});
 	});
 
-	it('should fetch data from url specified by "fetchUrl" function when "fetch" is true', function(
-		done
-	) {
+	it('should fetch data from url specified by "fetchUrl" function when "fetch" is true', function(done) {
 		let stub = sinon
 			.stub(RequestScreen.prototype, 'load')
 			.callsFake(function() {
@@ -297,9 +289,7 @@ describe('Router', function() {
 			});
 	});
 
-	it('should router set screen cacheability to true based on its cacheable state', function(
-		done
-	) {
+	it('should router set screen cacheability to true based on its cacheable state', function(done) {
 		router = new Router({
 			path: '/path',
 			component: CustomComponent,
@@ -313,9 +303,7 @@ describe('Router', function() {
 			});
 	});
 
-	it('should router set screen cacheability to false based on its cacheable state', function(
-		done
-	) {
+	it('should router set screen cacheability to false based on its cacheable state', function(done) {
 		router = new Router({
 			path: '/path',
 			component: CustomComponent,
@@ -329,9 +317,7 @@ describe('Router', function() {
 			});
 	});
 
-	it('should load router data and store as router lastLoadedState', function(
-		done
-	) {
+	it('should load router data and store as router lastLoadedState', function(done) {
 		router = new Router({
 			data: 'sentinel',
 			path: '/path',
@@ -345,9 +331,7 @@ describe('Router', function() {
 			});
 	});
 
-	it('should include the current url in the active state by default', function(
-		done
-	) {
+	it('should include the current url in the active state by default', function(done) {
 		let data = {
 			foo: 'foo',
 		};
@@ -368,9 +352,7 @@ describe('Router', function() {
 			});
 	});
 
-	it('should add extracted param data to the active state by default', function(
-		done
-	) {
+	it('should add extracted param data to the active state by default', function(done) {
 		let data = {
 			foo: 'foo',
 		};
@@ -399,9 +381,7 @@ describe('Router', function() {
 			});
 	});
 
-	it('should add extracted param data to the active state when setBasePath is used', function(
-		done
-	) {
+	it('should add extracted param data to the active state when setBasePath is used', function(done) {
 		let data = {
 			foo: 'foo',
 		};
@@ -431,9 +411,7 @@ describe('Router', function() {
 			});
 	});
 
-	it('should add extracted query data to the active state by default', function(
-		done
-	) {
+	it('should add extracted query data to the active state by default', function(done) {
 		let data = {
 			foo: 'foo',
 		};
@@ -456,9 +434,7 @@ describe('Router', function() {
 			});
 	});
 
-	it('should not include data in the active state if "includeRoutingData" is set to false', function(
-		done
-	) {
+	it('should not include data in the active state if "includeRoutingData" is set to false', function(done) {
 		let data = {
 			foo: 'foo',
 		};
@@ -515,9 +491,7 @@ describe('Router', function() {
 			});
 	});
 
-	it('should render component with right element when routing to path', function(
-		done
-	) {
+	it('should render component with right element when routing to path', function(done) {
 		dom.append(document.body, '<div id="el"><div></div></div>');
 		let element = document.querySelector('#el > div');
 		router = new Router({
@@ -555,9 +529,7 @@ describe('Router', function() {
 		assert.equal(newElement, router.element);
 	});
 
-	it('should render redirect component when routing to path that got redirected', function(
-		done
-	) {
+	it('should render redirect component when routing to path that got redirected', function(done) {
 		class TestScreen extends Router.defaultScreen {
 			beforeUpdateHistoryPath() {
 				return '/redirect';
@@ -614,9 +586,7 @@ describe('Router', function() {
 			});
 	});
 
-	it('should store "lastPath" and "lastLoadedState" in redirect router when routing to path that got redirected', function(
-		done
-	) {
+	it('should store "lastPath" and "lastLoadedState" in redirect router when routing to path that got redirected', function(done) {
 		class TestScreen extends Router.defaultScreen {
 			beforeUpdateHistoryPath() {
 				return '/redirect';
@@ -642,9 +612,7 @@ describe('Router', function() {
 			});
 	});
 
-	it('should render original component when routing to path that got redirected without match route', function(
-		done
-	) {
+	it('should render original component when routing to path that got redirected without match route', function(done) {
 		class TestScreen extends Router.defaultScreen {
 			beforeUpdateHistoryPath() {
 				return '/redirect';
@@ -701,9 +669,7 @@ describe('Router', function() {
 			});
 	});
 
-	it('should not rerender if any state property other than "component" or "isActive_" changes', function(
-		done
-	) {
+	it('should not rerender if any state property other than "component" or "isActive_" changes', function(done) {
 		router = new Router({
 			path: '/path',
 			component: CustomComponent,
@@ -722,9 +688,7 @@ describe('Router', function() {
 			});
 	});
 
-	it('should dispose then render component when routing to new component path', function(
-		done
-	) {
+	it('should dispose then render component when routing to new component path', function(done) {
 		router = new Router({
 			path: '/path',
 			component: CustomComponent,
@@ -753,9 +717,7 @@ describe('Router', function() {
 			});
 	});
 
-	it('should reuse element when routing to different component that received same element', function(
-		done
-	) {
+	it('should reuse element when routing to different component that received same element', function(done) {
 		dom.append(document.body, '<div id="el"><div></div></div>');
 		let element = document.querySelector('#el > div');
 		router = new Router({
@@ -785,9 +747,7 @@ describe('Router', function() {
 			});
 	});
 
-	it('should reuse component when routing to same router path pattern that uses same constructor', function(
-		done
-	) {
+	it('should reuse component when routing to same router path pattern that uses same constructor', function(done) {
 		router = new Router({
 			path: '/path/:part',
 			component: CustomComponent,
@@ -809,9 +769,7 @@ describe('Router', function() {
 			});
 	});
 
-	it('should reuse component when routing to same router path pattern that uses same constructor name', function(
-		done
-	) {
+	it('should reuse component when routing to same router path pattern that uses same constructor name', function(done) {
 		router = new Router({
 			path: '/path/:part',
 			component: 'CustomComponent',
@@ -833,9 +791,7 @@ describe('Router', function() {
 			});
 	});
 
-	it('should not reuse component when routing to different path that uses same constructor', function(
-		done
-	) {
+	it('should not reuse component when routing to different path that uses same constructor', function(done) {
 		router = new Router({
 			path: '/path/1',
 			component: CustomComponent,
@@ -859,9 +815,7 @@ describe('Router', function() {
 			});
 	});
 
-	it('should not reuse component when routing to different path that uses same constructor name', function(
-		done
-	) {
+	it('should not reuse component when routing to different path that uses same constructor name', function(done) {
 		router = new Router({
 			path: '/path/1',
 			component: 'CustomComponent',
@@ -885,9 +839,7 @@ describe('Router', function() {
 			});
 	});
 
-	it('should change router as usual if beforeDeactivateHandler returns nothing', function(
-		done
-	) {
+	it('should change router as usual if beforeDeactivateHandler returns nothing', function(done) {
 		router = new Router({
 			beforeDeactivateHandler: () => {},
 			path: '/path/1',
@@ -915,9 +867,7 @@ describe('Router', function() {
 			});
 	});
 
-	it('should not change router if beforeDeactivateHandler returns "true"', function(
-		done
-	) {
+	it('should not change router if beforeDeactivateHandler returns "true"', function(done) {
 		router = new Router({
 			beforeDeactivateHandler: () => true,
 			path: '/path/1',
@@ -945,9 +895,7 @@ describe('Router', function() {
 			});
 	});
 
-	it('should not change router if beforeDeactivateHandler given by name returns "true"', function(
-		done
-	) {
+	it('should not change router if beforeDeactivateHandler given by name returns "true"', function(done) {
 		class TestComponent extends CustomComponent {
 			handleDeactivate() {
 				return true;
@@ -982,9 +930,7 @@ describe('Router', function() {
 			});
 	});
 
-	it('should not throw error if function name given for "beforeDeactivateHandler" can\'t be found', function(
-		done
-	) {
+	it('should not throw error if function name given for "beforeDeactivateHandler" can\'t be found', function(done) {
 		router = new Router({
 			beforeDeactivateHandler: 'handleDeactivate',
 			path: '/path/1',
@@ -1007,9 +953,7 @@ describe('Router', function() {
 			});
 	});
 
-	it('should clear active router and component when it\'s disposed', function(
-		done
-	) {
+	it('should clear active router and component when it\'s disposed', function(done) {
 		router = new Router({
 			path: '/path',
 			component: CustomComponent,
@@ -1027,9 +971,7 @@ describe('Router', function() {
 			});
 	});
 
-	it('should defer screen flip until Router component render all children', function(
-		done
-	) {
+	it('should defer screen flip until Router component render all children', function(done) {
 		let activeComponent;
 		class TestScreen extends Router.defaultScreen {
 			flip() {
