@@ -4,7 +4,7 @@ import About from './About';
 import Component from 'metal-component';
 import Home from './Home';
 import Router from '../../src/all/router.js';
-import './Image.soy';
+import './Image.soy.js';
 
 // Routing from JavaScript -----------------------------------------------------
 
