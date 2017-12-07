@@ -10,26 +10,31 @@ Routing solution to link URLs to Metal.js components using HTML5 History API.
 
 ## Setup
 
-1. Install NodeJS >= [v0.12.0](http://nodejs.org/dist/v0.12.0/), if you don't have it yet.
+1. Install a recent release of [NodeJS](https://nodejs.org/en/download/) if you
+don't have it yet.
 
-2. Install global dependencies:
-
-  ```
-  [sudo] npm install -g gulp
-  ```
-
-3. Install local dependencies:
+2. Install local dependencies:
 
   ```
   npm install
   ```
 
+3. Run the tests:
+
+  ```
+  npm test
+  ```
+
 4. Build the code:
 
   ```
-  gulp build
+  npm run build
   ```
 
 ## Demo
 
   Check it out the demo page by running `npm run demo`.
+
+## Contributing
+
+Check out the [contributing guidelines](https://github.com/metal/metal-uri/blob/master/CONTRIBUTING.md) for more information.
