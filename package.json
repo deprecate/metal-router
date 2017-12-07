@@ -26,7 +26,7 @@
     "prepublish": "npm run soy && npm run compile",
     "prettier": "prettier-eslint '{src,test}/**/*.js'",
     "soy": "metalsoy",
-    "start": "http-server . -o http://localhost:8080/demos/index.html",
+    "start": "superstatic . -c ./demos/server.json --port 8080",
     "test": "karma start",
     "test:saucelabs": "karma start karma-saucelabs.conf.js"
   },
@@ -50,7 +50,6 @@
     "chai": "^4.1.2",
     "eslint": "^4.12.1",
     "eslint-config-liferay": "^2.0.18",
-    "http-server": "^0.10.0",
     "karma": "^1.1.0",
     "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "^2.2.0",
@@ -66,6 +65,7 @@
     "prettier-eslint-cli": "^4.4.0",
     "run-sequence": "^1.2.2",
     "sinon": "^4.1.2",
+    "superstatic": "^5.0.1",
     "webpack": "^3.10.0"
   },
   "lint-staged": {
