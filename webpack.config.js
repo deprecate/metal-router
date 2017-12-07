@@ -1,5 +1,5 @@
 module.exports = {
-	entry: './src/all/router.js',
+	entry: './demos/src/demos.js',
 	module: {
 		rules: [{
 			test: /\.js$/,
@@ -16,6 +16,6 @@ module.exports = {
 	output: {
 		library: 'metal',
 		libraryTarget: 'this',
-		filename: './build/globals/router.js'
+		filename: './demos/build/metal.js'
 	}
 };
