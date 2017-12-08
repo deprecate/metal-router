@@ -1,11 +1,10 @@
 'use strict';
 
-import App from './RouterApp';
 import CancellablePromise from 'metal-promise';
 import IncrementalDomRenderer from 'metal-incremental-dom';
 import Uri from 'metal-uri';
 import {Component, ComponentRegistry} from 'metal-component';
-import {RequestScreen, Route} from 'senna';
+import {App, RequestScreen, Route} from 'senna';
 import {core, getFunctionName, object} from 'metal';
 
 /**
@@ -365,16 +364,7 @@ class ComponentScreen extends RequestScreen {
 	/**
 	 * @inheritDoc
 	 */
-	beforeDeactivate() {
-		return this.deactivateInternal_;
-	}
-
-	/**
-	 * Calls the handler specified by the router's `beforeActivateHandler`
-	 * state property.
-	 * @return {?boolean}
-	 */
-	beforeRouterActivate() {
+	beforeActivate() {
 		let handler = this.router.beforeActivateHandler;
 		if (handler) {
 			if (core.isString(handler)) {
@@ -385,13 +375,9 @@ class ComponentScreen extends RequestScreen {
 	}
 
 	/**
-	 * Calls the handler specified by the router's `beforeDeactivateHandler`
-	 * state property.
-	 * @return {?boolean}
+	 * @inheritDoc
 	 */
-	beforeRouterDeactivate() {
-		this.setDeactivate(false);
-
+	beforeDeactivate() {
 		let handler = this.router.beforeDeactivateHandler;
 		if (handler) {
 			if (core.isString(handler)) {
@@ -568,6 +554,7 @@ class ComponentScreen extends RequestScreen {
 			return comp[name];
 		} else {
 			const compName = getFunctionName(comp);
+
 			throw new Error(
 				`No function named "${name}" exists inside ${compName}.`
 			);
@@ -589,15 +576,6 @@ class ComponentScreen extends RequestScreen {
 				activeRouter.element = null;
 			}
 		}
-	}
-
-	/**
-	 * Sets the `deactivateInternal_` property used by the beforeDeactivate
-	 * lifecycle method.
-	 * @param {!boolean} value
-	 */
-	setDeactivate(value) {
-		this.deactivateInternal_ = value;
 	}
 
 	/**

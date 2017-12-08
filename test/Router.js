@@ -1064,8 +1064,12 @@ describe('Router', function() {
 				assert.ok(Router.getActiveComponent() instanceof CustomComponent);
 				assert.equal('/path/1', window.location.pathname);
 
-				assert.throws(() => Router.router().navigate('/path/2'));
-				done();
+				Router.router()
+					.navigate('/path/2')
+					.catch(err => {
+						assert.ok(err instanceof Error);
+						done();
+					});
 			});
 	});
 
