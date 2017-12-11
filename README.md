@@ -31,9 +31,11 @@ don't have it yet.
   npm run build
   ```
 
-## Demo
+5. Run the demo:
 
-  Check out the demo page by running `npm run demo`.
+  ```
+  npm run demo
+  ```
 
 ## Use
 
