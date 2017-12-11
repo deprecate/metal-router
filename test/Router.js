@@ -1190,6 +1190,50 @@ describe('Router', function() {
 
 		assert.ok(!Router.router().hasRoutes());
 	});
+
+	it('should inherit parent Router component when none is defined', function() {
+		class FirstComponent {}
+		class SecondComponent {}
+
+		class ParentComponent extends Component {
+			render() {
+				IncrementalDOM.elementOpen(
+					Router,
+					null,
+					null,
+					'component',
+					FirstComponent,
+					'path',
+					'/path'
+				);
+				IncrementalDOM.elementOpen(Router, null, null, 'path', '/first');
+				IncrementalDOM.elementVoid(
+					Router,
+					null,
+					null,
+					'component',
+					SecondComponent,
+					'path',
+					'/second'
+				);
+				IncrementalDOM.elementClose(Router);
+				IncrementalDOM.elementClose(Router);
+			}
+		}
+		ParentComponent.RENDERER = IncrementalDomRenderer;
+
+		comp = new ParentComponent();
+
+		const {routes} = Router.router();
+
+		assert.equal(routes.length, 3);
+		assert.equal(routes[0].path, '/path');
+		assert.equal(routes[1].path, '/path/first');
+		assert.equal(routes[2].path, '/path/first/second');
+		assert.deepEqual(routes[0].router.component, FirstComponent);
+		assert.deepEqual(routes[1].router.component, FirstComponent);
+		assert.deepEqual(routes[2].router.component, SecondComponent);
+	});
 });
 
 describe('RouterSoy', function() {

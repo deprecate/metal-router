@@ -59,6 +59,10 @@ class Router extends Component {
 
 		config.path = Uri.joinPaths(this.path, config.path);
 
+		if (!config.component) {
+			config.component = this.component;
+		}
+
 		return new child.tag(config); // eslint-disable-line
 	}
 
