@@ -13,6 +13,7 @@ import RouterSoy from '../src/Router';
 const defaultScreen = Router.defaultScreen;
 
 describe('Router', function() {
+	let comp;
 	let router;
 	let router2;
 
@@ -27,6 +28,9 @@ describe('Router', function() {
 		}
 		Router.activeRouter = null;
 		Router.defaultScreen = defaultScreen;
+		if (comp) {
+			comp.dispose();
+		}
 		if (router) {
 			router.dispose();
 		}
@@ -992,6 +996,243 @@ describe('Router', function() {
 				assert.ok(activeComponent);
 				done();
 			});
+	});
+
+	it('should create nested routes from IncrementalDOM calls', function() {
+		class FirstComponent {}
+		class SecondComponent {}
+		class ThirdComponent {}
+
+		class ParentComponent extends Component {
+			render() {
+				IncrementalDOM.elementOpen(
+					Router,
+					null,
+					null,
+					'component',
+					FirstComponent,
+					'path',
+					'/path'
+				);
+				IncrementalDOM.elementOpen(
+					Router,
+					null,
+					null,
+					'component',
+					SecondComponent,
+					'path',
+					'/first'
+				);
+				IncrementalDOM.elementVoid(
+					Router,
+					null,
+					null,
+					'component',
+					ThirdComponent,
+					'path',
+					'/second'
+				);
+				IncrementalDOM.elementClose(Router);
+				IncrementalDOM.elementClose(Router);
+			}
+		}
+		ParentComponent.RENDERER = IncrementalDomRenderer;
+
+		comp = new ParentComponent();
+
+		const {routes} = Router.router();
+
+		assert.equal(routes.length, 3);
+		assert.equal(routes[0].path, '/path');
+		assert.equal(routes[1].path, '/path/first');
+		assert.equal(routes[2].path, '/path/first/second');
+		assert.deepEqual(routes[0].router.component, FirstComponent);
+		assert.deepEqual(routes[1].router.component, SecondComponent);
+		assert.deepEqual(routes[2].router.component, ThirdComponent);
+	});
+
+	it('should throw error if nested Router does not pass path that is a string', function() {
+		class FirstComponent {}
+
+		class ParentComponent extends Component {
+			render() {
+				IncrementalDOM.elementOpen(
+					Router,
+					null,
+					null,
+					'component',
+					FirstComponent,
+					'path',
+					'/path'
+				);
+				IncrementalDOM.elementVoid(
+					Router,
+					null,
+					null,
+					'component',
+					FirstComponent,
+					'path',
+					/\/first/
+				);
+				IncrementalDOM.elementClose(Router);
+			}
+		}
+		ParentComponent.RENDERER = IncrementalDomRenderer;
+
+		assert.throws(() => {
+			comp = new ParentComponent();
+		}, 'When nesting Routers, both parent and child path values must be strings.');
+	});
+
+	it('should throw error if parent Router does not have path that is a string', function() {
+		class FirstComponent {}
+
+		class ParentComponent extends Component {
+			render() {
+				IncrementalDOM.elementOpen(
+					Router,
+					null,
+					null,
+					'component',
+					FirstComponent,
+					'path',
+					/\/first/
+				);
+				IncrementalDOM.elementVoid(
+					Router,
+					null,
+					null,
+					'component',
+					FirstComponent,
+					'path',
+					'/first'
+				);
+				IncrementalDOM.elementClose(Router);
+			}
+		}
+		ParentComponent.RENDERER = IncrementalDomRenderer;
+
+		assert.throws(() => {
+			comp = new ParentComponent();
+		}, 'When nesting Routers, both parent and child path values must be strings.');
+	});
+
+	it('should throw error if nested component is not an instance of Router', function() {
+		class FirstComponent {}
+
+		class ParentComponent extends Component {
+			render() {
+				IncrementalDOM.elementOpen(
+					Router,
+					null,
+					null,
+					'component',
+					FirstComponent,
+					'path',
+					'/path'
+				);
+				IncrementalDOM.elementVoid(FirstComponent);
+				IncrementalDOM.elementClose(Router);
+			}
+		}
+		ParentComponent.RENDERER = IncrementalDomRenderer;
+
+		assert.throws(() => {
+			comp = new ParentComponent();
+		}, 'Router can only receive additional Routers as children.');
+	});
+
+	it('should dispose child routers when parent router is disposed', function() {
+		class FirstComponent {}
+
+		class ParentComponent extends Component {
+			render() {
+				IncrementalDOM.elementOpen(
+					Router,
+					null,
+					null,
+					'component',
+					FirstComponent,
+					'path',
+					'/path'
+				);
+				IncrementalDOM.elementVoid(
+					Router,
+					null,
+					null,
+					'component',
+					FirstComponent,
+					'path',
+					'/first'
+				);
+				IncrementalDOM.elementVoid(
+					Router,
+					null,
+					null,
+					'component',
+					FirstComponent,
+					'path',
+					'/second'
+				);
+				IncrementalDOM.elementClose(Router);
+			}
+		}
+		ParentComponent.RENDERER = IncrementalDomRenderer;
+
+		comp = new ParentComponent();
+
+		const {routes} = Router.router();
+
+		assert.equal(routes[0].path, '/path');
+		assert.ok(Router.router().hasRoutes());
+
+		routes[0].router.dispose();
+
+		assert.ok(!Router.router().hasRoutes());
+	});
+
+	it('should inherit parent Router component when none is defined', function() {
+		class FirstComponent {}
+		class SecondComponent {}
+
+		class ParentComponent extends Component {
+			render() {
+				IncrementalDOM.elementOpen(
+					Router,
+					null,
+					null,
+					'component',
+					FirstComponent,
+					'path',
+					'/path'
+				);
+				IncrementalDOM.elementOpen(Router, null, null, 'path', '/first');
+				IncrementalDOM.elementVoid(
+					Router,
+					null,
+					null,
+					'component',
+					SecondComponent,
+					'path',
+					'/second'
+				);
+				IncrementalDOM.elementClose(Router);
+				IncrementalDOM.elementClose(Router);
+			}
+		}
+		ParentComponent.RENDERER = IncrementalDomRenderer;
+
+		comp = new ParentComponent();
+
+		const {routes} = Router.router();
+
+		assert.equal(routes.length, 3);
+		assert.equal(routes[0].path, '/path');
+		assert.equal(routes[1].path, '/path/first');
+		assert.equal(routes[2].path, '/path/first/second');
+		assert.deepEqual(routes[0].router.component, FirstComponent);
+		assert.deepEqual(routes[1].router.component, FirstComponent);
+		assert.deepEqual(routes[2].router.component, SecondComponent);
 	});
 });
 
