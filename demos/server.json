@@ -1,0 +1,19 @@
+{
+	"public": "./",
+	"redirects": [
+		{
+			"source": "/",
+			"destination": "/demos/index.html"
+		}
+	],
+	"rewrites": [
+		{
+			"source": "/demos/basic/**",
+			"destination": "/demos/basic/index.html"
+		},
+		{
+			"source": "/demos/basic-soy/**",
+			"destination": "/demos/basic-soy/index.html"
+		}
+	]
+}
