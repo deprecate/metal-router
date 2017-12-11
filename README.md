@@ -8,35 +8,6 @@ Routing solution to link URLs to Metal.js components using HTML5 History API.
 
 ![](https://raw.githubusercontent.com/metal/metal-router/master/demos/img/sample.gif)
 
-## Setup
-
-1. Install a recent release of [NodeJS](https://nodejs.org/en/download/) if you
-don't have it yet.
-
-2. Install local dependencies:
-
-  ```
-  npm install
-  ```
-
-3. Run the tests:
-
-  ```
-  npm test
-  ```
-
-4. Build the code:
-
-  ```
-  npm run build
-  ```
-
-5. Run the demo:
-
-  ```
-  npm run demo
-  ```
-
 ## Use
 
 ### Simple use case
@@ -206,6 +177,35 @@ be passed to the component.
   title: 'User Page'
 }
 ```
+
+## Setup
+
+1. Install a recent release of [NodeJS](https://nodejs.org/en/download/) if you
+don't have it yet.
+
+2. Install local dependencies:
+
+  ```
+  npm install
+  ```
+
+3. Run the tests:
+
+  ```
+  npm test
+  ```
+
+4. Build the code:
+
+  ```
+  npm run build
+  ```
+
+5. Run the demo:
+
+  ```
+  npm run demo
+  ```
 
 ## Contributing
 
