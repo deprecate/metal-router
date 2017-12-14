@@ -368,6 +368,8 @@ class ComponentScreen extends RequestScreen {
 		let handler = this.router.beforeActivateHandler;
 		if (handler) {
 			if (core.isString(handler)) {
+				// Passing component class because only static methods can be
+				// used for beforeActivateHandler
 				handler = this.resolveHandler_(handler, this.router.component);
 			}
 			return handler();
@@ -381,7 +383,12 @@ class ComponentScreen extends RequestScreen {
 		let handler = this.router.beforeDeactivateHandler;
 		if (handler) {
 			if (core.isString(handler)) {
-				handler = this.resolveHandler_(handler);
+				// Passing component instance because all instance methods can
+				// be used for beforeDeactivateHandler
+				handler = this.resolveHandler_(
+					handler,
+					this.router.getRouteComponent()
+				);
 			}
 			return handler();
 		}
@@ -546,10 +553,6 @@ class ComponentScreen extends RequestScreen {
 	 * @return {?Function}
 	 */
 	resolveHandler_(name, comp) {
-		if (!comp) {
-			comp = this.router.getRouteComponent();
-		}
-
 		if (comp && core.isFunction(comp[name])) {
 			return comp[name];
 		} else {
