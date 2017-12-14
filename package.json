@@ -41,7 +41,7 @@
     "metal-promise": "^3.0.0",
     "metal-soy": "^2.15.0",
     "metal-uri": "^3.1.0",
-    "senna": "^2.3.1"
+    "senna": "^2.5.0"
   },
   "devDependencies": {
     "babel-cli": "^6.4.5",

@@ -1,11 +1,11 @@
 'use strict';
 
-import {core, getFunctionName, object} from 'metal';
-import {App, RequestScreen, Route} from 'senna';
 import CancellablePromise from 'metal-promise';
-import {Component, ComponentRegistry} from 'metal-component';
 import IncrementalDomRenderer from 'metal-incremental-dom';
 import Uri from 'metal-uri';
+import {Component, ComponentRegistry} from 'metal-component';
+import {App, RequestScreen, Route} from 'senna';
+import {core, getFunctionName, object} from 'metal';
 
 /**
  * Router class responsible for routing links to components.
@@ -223,6 +223,16 @@ Router.RENDERER = IncrementalDomRenderer;
  */
 Router.STATE = {
 	/**
+	 * Handler to be called before a router is activated. Can be given as a
+	 * function reference directly, or as the name of a function to be called in
+	 * the router's component instance.
+	 * @type {!function()|string}
+	 */
+	beforeActivateHandler: {
+		validator: val => core.isString(val) || core.isFunction(val),
+	},
+
+	/**
 	 * Handler to be called before a router is deactivated. Can be given as a
 	 * function reference directly, or as the name of a function to be called in
 	 * the router's component instance.
@@ -352,26 +362,35 @@ class ComponentScreen extends RequestScreen {
 	}
 
 	/**
-	 * Calls the handler specified by the router's `beforeDeactivateHandler`
-	 * state property.
-	 * @return {?boolean}
+	 * @inheritDoc
 	 */
-	beforeDeactivate() {
-		const handler = this.router.beforeDeactivateHandler;
+	beforeActivate() {
+		let handler = this.router.beforeActivateHandler;
 		if (handler) {
 			if (core.isString(handler)) {
-				const comp = this.router.getRouteComponent();
-				if (comp && core.isFunction(comp[handler])) {
-					return comp[handler]();
-				} else {
-					const compName = getFunctionName(comp);
-					throw new Error(
-						`No function named "${handler}" exists inside ${compName}.`
-					);
-				}
-			} else {
-				return handler();
+				// Passing component class because only static methods can be
+				// used for beforeActivateHandler
+				handler = this.resolveHandler_(handler, this.router.component);
 			}
+			return handler();
+		}
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	beforeDeactivate() {
+		let handler = this.router.beforeDeactivateHandler;
+		if (handler) {
+			if (core.isString(handler)) {
+				// Passing component instance because all instance methods can
+				// be used for beforeDeactivateHandler
+				handler = this.resolveHandler_(
+					handler,
+					this.router.getRouteComponent()
+				);
+			}
+			return handler();
 		}
 	}
 
@@ -524,6 +543,24 @@ class ComponentScreen extends RequestScreen {
 				app.screens[app.redirectPath] = app.screens[app.activePath];
 				delete app.screens[app.activePath];
 			});
+		}
+	}
+
+	/**
+	 * Resolves route component method by name.
+	 * @param {!string} name
+	 * @param {?Component} comp
+	 * @return {?Function}
+	 */
+	resolveHandler_(name, comp) {
+		if (comp && core.isFunction(comp[name])) {
+			return comp[name];
+		} else {
+			const compName = getFunctionName(comp);
+
+			throw new Error(
+				`No function named "${name}" exists inside ${compName}.`
+			);
 		}
 	}
 

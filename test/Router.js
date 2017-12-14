@@ -839,6 +839,122 @@ describe('Router', function() {
 			});
 	});
 
+	it('should prevent navigation when promise returned by beforeActivateHandler resolves to true', function(done) {
+		router = new Router({
+			beforeActivateHandler: () => {
+				return new CancellablePromise(resolve => {
+					setTimeout(() => {
+						resolve(true);
+					}, 0);
+				});
+			},
+			path: '/path',
+			component: CustomComponent,
+		});
+
+		const {pathname} = window.location;
+
+		Router.router()
+			.navigate('/path')
+			.catch(err => {
+				assert.equal(Router.getActiveComponent(), null);
+				assert.equal(err.message, 'Cancelled by next screen');
+				assert.equal(pathname, window.location.pathname);
+
+				done();
+			});
+	});
+
+	it('should not prevent navigation when promise returned by beforeActivateHandler resolves to false', function(done) {
+		router = new Router({
+			beforeActivateHandler: () => {
+				return new CancellablePromise(resolve => {
+					setTimeout(() => {
+						resolve(false);
+					}, 0);
+				});
+			},
+			path: '/path',
+			component: CustomComponent,
+		});
+
+		Router.router()
+			.navigate('/path')
+			.then(() => {
+				assert.equal('/path', window.location.pathname);
+				assert.ok(Router.getActiveComponent() instanceof CustomComponent);
+
+				done();
+			});
+	});
+
+	it('should prevent navigation when beforeActivateHandler returns true', function(done) {
+		router = new Router({
+			beforeActivateHandler: () => {
+				return true;
+			},
+			path: '/path',
+			component: CustomComponent,
+		});
+
+		const {pathname} = window.location;
+
+		Router.router()
+			.navigate('/path')
+			.catch(err => {
+				assert.equal(Router.getActiveComponent(), null);
+				assert.equal(err.message, 'Cancelled by next screen');
+				assert.equal(pathname, window.location.pathname);
+
+				done();
+			});
+	});
+
+	it('should not prevent navigation when beforeActivateHandler returns false', function(done) {
+		router = new Router({
+			beforeActivateHandler: () => {
+				return false;
+			},
+			path: '/path',
+			component: CustomComponent,
+		});
+
+		Router.router()
+			.navigate('/path')
+			.then(() => {
+				assert.equal('/path', window.location.pathname);
+				assert.ok(Router.getActiveComponent() instanceof CustomComponent);
+
+				done();
+			});
+	});
+
+	it('should prevent navigation if beforeActivateHandler given by name returns "true"', function(done) {
+		class TestComponent extends CustomComponent {
+			static handleActivate() {
+				return true;
+			}
+		}
+
+		router = new Router({
+			beforeActivateHandler: 'handleActivate',
+			path: '/path/1',
+			component: TestComponent,
+		});
+
+		const {pathname} = window.location;
+
+		Router.router()
+			.navigate('/path/1')
+			.catch(err => {
+				assert.equal(Router.getActiveComponent(), null);
+				assert.equal(err.message, 'Cancelled by next screen');
+				assert.equal(pathname, window.location.pathname);
+
+				done();
+			});
+	});
+
 	it('should change router as usual if beforeDeactivateHandler returns nothing', function(done) {
 		router = new Router({
 			beforeDeactivateHandler: () => {},
@@ -948,8 +1064,75 @@ describe('Router', function() {
 				assert.ok(Router.getActiveComponent() instanceof CustomComponent);
 				assert.equal('/path/1', window.location.pathname);
 
-				assert.throws(() => Router.router().navigate('/path/2'));
-				done();
+				Router.router()
+					.navigate('/path/2')
+					.catch(err => {
+						assert.ok(err instanceof Error);
+						done();
+					});
+			});
+	});
+
+	it('should prevent navigation when promise returned by beforeDeactivateHandler resolves to true', function(done) {
+		router = new Router({
+			path: '/path',
+			component: CustomComponent,
+		});
+		router2 = new Router({
+			beforeDeactivateHandler: () => {
+				return new CancellablePromise(resolve => {
+					setTimeout(() => {
+						resolve(true);
+					}, 0);
+				});
+			},
+			path: '/path/2',
+			component: CustomComponent2,
+		});
+
+		Router.router()
+			.navigate('/path/2')
+			.then(() => {
+				Router.router()
+					.navigate('/path')
+					.catch(err => {
+						assert.equal('/path/2', window.location.pathname);
+						assert.equal(err.message, 'Cancelled by active screen');
+						assert.ok(Router.getActiveComponent() instanceof CustomComponent2);
+
+						done();
+					});
+			});
+	});
+
+	it('should not prevent navigation when promise returned by beforeDeactivateHandler resolves to false', function(done) {
+		router = new Router({
+			path: '/path',
+			component: CustomComponent,
+		});
+		router2 = new Router({
+			beforeDeactivateHandler: () => {
+				return new CancellablePromise(resolve => {
+					setTimeout(() => {
+						resolve(false);
+					}, 0);
+				});
+			},
+			path: '/path/2',
+			component: CustomComponent2,
+		});
+
+		Router.router()
+			.navigate('/path/2')
+			.then(() => {
+				Router.router()
+					.navigate('/path')
+					.then(() => {
+						assert.equal('/path', window.location.pathname);
+						assert.ok(Router.getActiveComponent() instanceof CustomComponent);
+
+						done();
+					});
 			});
 	});
 
