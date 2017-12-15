@@ -7,8 +7,7 @@ import Soy from 'metal-soy';
 /**
  * Same as `Router`, but can also be called within soy templates.
  */
-class RouterSoy extends Router {
-}
+class RouterSoy extends Router {}
 
 Soy.register(RouterSoy, templates);
 

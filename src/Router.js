@@ -1,11 +1,11 @@
 'use strict';
 
-import { core, getFunctionName, object } from 'metal';
-import { App, RequestScreen, Route } from 'senna';
 import CancellablePromise from 'metal-promise';
-import { Component, ComponentRegistry } from 'metal-component';
 import IncrementalDomRenderer from 'metal-incremental-dom';
 import Uri from 'metal-uri';
+import {Component, ComponentRegistry} from 'metal-component';
+import {App, RequestScreen, Route} from 'senna';
+import {core, getFunctionName, object} from 'metal';
 
 /**
  * Router class responsible for routing links to components.
@@ -42,8 +42,8 @@ class Router extends Component {
 				router: {
 					currentUrl: path,
 					params,
-					query
-				}
+					query,
+				},
 			});
 		}
 		return state;
@@ -60,10 +60,11 @@ class Router extends Component {
 
 	/**
 	 * Creates the screen to be used by this router.
+	 * @return {ComponentScreen}
 	 * @protected
 	 */
 	createScreen_() {
-		this.screen_ = new Router.defaultScreen(this);
+		this.screen_ = new Router.defaultScreen(this); // eslint-disable-line
 		return this.screen_;
 	}
 
@@ -112,7 +113,9 @@ class Router extends Component {
 	 * @return {Component}
 	 */
 	static getActiveComponent() {
-		return Router.activeRouter ? Router.activeRouter.getRouteComponent() : null;
+		return Router.activeRouter
+			? Router.activeRouter.getRouteComponent()
+			: null;
 	}
 
 	/**
@@ -133,6 +136,7 @@ class Router extends Component {
 
 	/**
 	 * Gets the screen that is being used by this router.
+	 * @return {ComponentScreen}
 	 */
 	getScreen() {
 		return this.screen_;
@@ -186,6 +190,8 @@ class Router extends Component {
 	 * Makes sure that the `Router` is only rerendered if either `isActive_` or
 	 * `component` has changed. The other state properties are not used for
 	 * rendering.
+	 * @param {!Object} changes
+	 * @return {boolean|Component}
 	 */
 	shouldUpdate(changes) {
 		return changes.isActive_ || changes.component;
@@ -199,9 +205,9 @@ class Router extends Component {
 	 * @protected
 	 */
 	toArray_(config) {
-		var arr = [];
-		var keys = Object.keys(config || {});
-		for (var i = 0; i < keys.length; i++) {
+		let arr = [];
+		let keys = Object.keys(config || {});
+		for (let i = 0; i < keys.length; i++) {
 			arr.push(keys[i], config[keys[i]]);
 		}
 		return arr;
@@ -217,13 +223,23 @@ Router.RENDERER = IncrementalDomRenderer;
  */
 Router.STATE = {
 	/**
+	 * Handler to be called before a router is activated. Can be given as a
+	 * function reference directly, or as the name of a function to be called in
+	 * the router's component instance.
+	 * @type {!function()|string}
+	 */
+	beforeActivateHandler: {
+		validator: val => core.isString(val) || core.isFunction(val),
+	},
+
+	/**
 	 * Handler to be called before a router is deactivated. Can be given as a
 	 * function reference directly, or as the name of a function to be called in
 	 * the router's component instance.
 	 * @type {!function()|string}
 	 */
 	beforeDeactivateHandler: {
-		validator: val => core.isString(val) || core.isFunction(val)
+		validator: val => core.isString(val) || core.isFunction(val),
 	},
 
 	/**
@@ -233,7 +249,7 @@ Router.STATE = {
 	 */
 	cacheable: {
 		validator: core.isBoolean,
-		value: true
+		value: true,
 	},
 
 	/**
@@ -241,7 +257,7 @@ Router.STATE = {
 	 * @type {!Function|string}
 	 */
 	component: {
-		setter: 'setterComponentFn_'
+		setter: 'setterComponentFn_',
 	},
 
 	/**
@@ -250,7 +266,7 @@ Router.STATE = {
 	 * @type {!Object|function(?string=)}
 	 */
 	data: {
-		setter: (val) => core.isFunction(val) ? val : () => (val || {})
+		setter: val => (core.isFunction(val) ? val : () => val || {}),
 	},
 
 	/**
@@ -258,7 +274,7 @@ Router.STATE = {
 	 * to the server. By default the data will come from `data` instead.
 	 */
 	fetch: {
-		value: false
+		value: false,
 	},
 
 	/**
@@ -268,7 +284,7 @@ Router.STATE = {
 	 * @type {?string|function()}
 	 */
 	fetchUrl: {
-		validator: val => core.isString(val) || core.isFunction(val)
+		validator: val => core.isString(val) || core.isFunction(val),
 	},
 
 	/**
@@ -278,7 +294,7 @@ Router.STATE = {
 	 */
 	fetchTimeout: {
 		validator: val => core.isNumber(val) || !core.isDefAndNotNull(val),
-		value: 30000
+		value: 30000,
 	},
 
 	/**
@@ -286,7 +302,7 @@ Router.STATE = {
 	 * included in the component's data.
 	 */
 	includeRoutingData: {
-		value: true
+		value: true,
 	},
 
 	/**
@@ -295,7 +311,7 @@ Router.STATE = {
 	 */
 	isActive_: {
 		internal: true,
-		value: false
+		value: false,
 	},
 
 	/**
@@ -303,8 +319,7 @@ Router.STATE = {
 	 * rendering the metal component.
 	 * @type {!string|RegExp|Function}
 	 */
-	path: {
-	}
+	path: {},
 };
 
 /**
@@ -321,8 +336,10 @@ Router.activeRouter = null;
  */
 Router.activeState = null;
 
+/**
+ * ComponentScreen class.
+ */
 class ComponentScreen extends RequestScreen {
-
 	/**
 	 * @inheritDoc
 	 */
@@ -345,26 +362,35 @@ class ComponentScreen extends RequestScreen {
 	}
 
 	/**
-	 * Calls the handler specified by the router's `beforeDeactivateHandler`
-	 * state property.
-	 * @return {?boolean}
+	 * @inheritDoc
 	 */
-	beforeDeactivate() {
-		const handler = this.router.beforeDeactivateHandler;
+	beforeActivate() {
+		let handler = this.router.beforeActivateHandler;
 		if (handler) {
 			if (core.isString(handler)) {
-				const comp = this.router.getRouteComponent();
-				if (comp && core.isFunction(comp[handler])) {
-					return comp[handler]();
-				} else {
-					const compName = getFunctionName(comp);
-					throw new Error(
-						`No function named "${handler}" exists inside ${compName}.`
-					);
-				}
-			} else {
-				return handler();
+				// Passing component class because only static methods can be
+				// used for beforeActivateHandler
+				handler = this.resolveHandler_(handler, this.router.component);
 			}
+			return handler();
+		}
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	beforeDeactivate() {
+		let handler = this.router.beforeDeactivateHandler;
+		if (handler) {
+			if (core.isString(handler)) {
+				// Passing component instance because all instance methods can
+				// be used for beforeDeactivateHandler
+				handler = this.resolveHandler_(
+					handler,
+					this.router.getRouteComponent()
+				);
+			}
+			return handler();
 		}
 	}
 
@@ -372,10 +398,13 @@ class ComponentScreen extends RequestScreen {
 	 * Returns the path that should be used to update navigation history. When
 	 * `fetchUrl` is given we should make sure that the original path is used
 	 * instead of the request one.
-	 * @param {string}
+	 * @param {string} path
+	 * @return {!string}
 	 */
 	beforeUpdateHistoryPath(path) {
-		return this.router.fetchUrl ? path : super.beforeUpdateHistoryPath(path);
+		return this.router.fetchUrl
+			? path
+			: super.beforeUpdateHistoryPath(path);
 	}
 
 	/**
@@ -395,7 +424,9 @@ class ComponentScreen extends RequestScreen {
 		this.maybeRedirectRouter();
 
 		Router.activeState = this.router.addRoutingData(
-			this.router.lastPath, this.maybeParseLastLoadedStateAsJson());
+			this.router.lastPath,
+			this.maybeParseLastLoadedStateAsJson()
+		);
 
 		if (Router.activeRouter) {
 			Router.activeRouter.isActive_ = false;
@@ -427,7 +458,7 @@ class ComponentScreen extends RequestScreen {
 	 */
 	load(path) {
 		this.setCacheable(this.router.cacheable);
-		var deferred = CancellablePromise.resolve();
+		let deferred = CancellablePromise.resolve();
 		let params;
 		if (this.router.fetch) {
 			deferred = deferred.then(() => super.load(this.getFetchUrl_(path)));
@@ -435,7 +466,7 @@ class ComponentScreen extends RequestScreen {
 			params = this.router.extractParams(path);
 			deferred = deferred.then(() => this.router.data(path, params));
 		}
-		return deferred.then((loadedState) => {
+		return deferred.then(loadedState => {
 			this.router.lastPath = path;
 			this.router.lastRedirectPath = this.maybeFindRedirectPath();
 			this.router.lastLoadedState = loadedState;
@@ -451,7 +482,7 @@ class ComponentScreen extends RequestScreen {
 	 * @return {?String} Redirect path.
 	 */
 	maybeFindRedirectPath() {
-		var redirectPath = this.beforeUpdateHistoryPath(this.router.lastPath);
+		let redirectPath = this.beforeUpdateHistoryPath(this.router.lastPath);
 		if (redirectPath !== this.router.lastPath) {
 			return redirectPath;
 		}
@@ -466,16 +497,16 @@ class ComponentScreen extends RequestScreen {
 	 * @return {Router}
 	 */
 	maybeFindRedirectRouter() {
-		var redirectPath = this.maybeFindRedirectPath();
+		let redirectPath = this.maybeFindRedirectPath();
 		if (redirectPath) {
-			var redirectRoute = Router.router().findRoute(redirectPath);
+			let redirectRoute = Router.router().findRoute(redirectPath);
 			if (redirectRoute) {
 				// The initiator component will load the render state and follow any
 				// "302" redirect that may happen. Therefore, the data returned of the
 				// redirect is used as "lastLoadedState" and the "lastRedirectPath" as
 				// "lastPath" for redirect router.
 				redirectRoute.router.lastPath = this.router.lastRedirectPath;
-				redirectRoute.router.lastLoadedState = this.router.lastLoadedState;
+				redirectRoute.router.lastLoadedState = this.router.lastLoadedState; // eslint-disable-line
 				return redirectRoute.router;
 			}
 		}
@@ -488,7 +519,7 @@ class ComponentScreen extends RequestScreen {
 	 * @return {object}
 	 */
 	maybeParseLastLoadedStateAsJson() {
-		var state = this.router.lastLoadedState;
+		let state = this.router.lastLoadedState;
 		try {
 			return JSON.parse(state);
 		} catch (err) {
@@ -500,7 +531,7 @@ class ComponentScreen extends RequestScreen {
 	 * @protected
 	 */
 	maybeRedirectRouter() {
-		var redirectRouter = this.maybeFindRedirectRouter();
+		let redirectRouter = this.maybeFindRedirectRouter();
 		if (redirectRouter) {
 			// If performing a redirect use "redirectRouter" as "this.router". The
 			// initiator "this.router" is completely ignored from now on.
@@ -512,6 +543,24 @@ class ComponentScreen extends RequestScreen {
 				app.screens[app.redirectPath] = app.screens[app.activePath];
 				delete app.screens[app.activePath];
 			});
+		}
+	}
+
+	/**
+	 * Resolves route component method by name.
+	 * @param {!string} name
+	 * @param {?Component} comp
+	 * @return {?Function}
+	 */
+	resolveHandler_(name, comp) {
+		if (comp && core.isFunction(comp[name])) {
+			return comp[name];
+		} else {
+			const compName = getFunctionName(comp);
+
+			throw new Error(
+				`No function named "${name}" exists inside ${compName}.`
+			);
 		}
 	}
 
@@ -538,7 +587,7 @@ class ComponentScreen extends RequestScreen {
 	 * @protected
 	 */
 	waitRouterRenderSubComponents(router) {
-		return new Promise((res) => router.once('rendered', res));
+		return new CancellablePromise(res => router.once('rendered', res));
 	}
 }
 
