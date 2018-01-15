@@ -1,12 +1,16 @@
 # Change Log
 
-## [Unreleased](https://github.com/metal/metal-router/tree/HEAD)
-
-[Full Changelog](https://github.com/metal/metal-router/compare/v3.7.0...HEAD)
+## [v3.7.1](https://github.com/metal/metal-router/tree/v3.7.1) (2018-01-15)
+[Full Changelog](https://github.com/metal/metal-router/compare/v3.7.0...v3.7.1)
 
 **Implemented enhancements:**
 
 - Provide a documentation [\#21](https://github.com/metal/metal-router/issues/21)
+
+**Merged pull requests:**
+
+- Adds CHANGELOG [\#37](https://github.com/metal/metal-router/pull/37) ([Robert-Frampton](https://github.com/Robert-Frampton))
+- Use env preset for compile script [\#36](https://github.com/metal/metal-router/pull/36) ([Robert-Frampton](https://github.com/Robert-Frampton))
 
 ## [v3.7.0](https://github.com/metal/metal-router/tree/v3.7.0) (2017-12-15)
 [Full Changelog](https://github.com/metal/metal-router/compare/v3.6.3...v3.7.0)
