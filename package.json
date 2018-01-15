@@ -18,7 +18,7 @@
   "scripts": {
     "build": "webpack",
     "checkFormat": "npm run prettier -- --list-different",
-    "compile": "babel --presets metal -d lib/ src/",
+    "compile": "babel --presets env -d lib/ src/",
     "demo": "npm run soy:demo && npm run build && npm run start",
     "format": "npm run prettier -- --write",
     "lint": "eslint '{src,test}/**/*.js'",
